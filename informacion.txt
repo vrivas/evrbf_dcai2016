@@ -1,0 +1,4 @@
+Para Mongo:   
+   Root User:     admin
+   Root Password: zjMSIntw9Ude
+   Database Name: nodejstest00

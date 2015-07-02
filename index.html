@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+
+
+-->
+<html>
+    <head>
+        <title>ICONIO: Distributed Time-Series Forecasting Technique</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+        <script src="./zepto.min.js">// Including zepto to make AJAX calls</script>
+        <script src="./vrivas.Date.js"></script>
+        <script src="./vrivas.EventTypes.js"></script>
+        <script src="./vrivas.Forecasting.js"></script>
+
+        <script>
+            var now = null;
+
+            /// Object containing  a ClientInfo instance with info about the client
+            var client = null;
+
+            /// Variable storing the timer to ask for new problems
+            var forecastingTimer = null;
+
+            /// Number of seconds every client will be computing a solution for the problem being asigned. Sent by server.
+            var milliSecs = null;
+
+            /// Experiment id. Sent by server
+            var experimentId = null;
+
+            /// EventSource object
+            var source = null;
+
+            /// Flag indicating if forecasting is being performed
+            var forecasting = false;
+
+            /// Problems solved
+            var solvedProblems = {};
+
+            /// Improved solutions
+            var improvedSolutions = 0;
+
+            /// Level of verbosity
+            var verb = {
+                "NOTHING": 0
+                , "MAIN": 1
+                , "STATS": 2
+                , "ALL": 4
+            };
+
+            var verbosity = verb.STATS;
+
+
+            /*
+             ----------------------------------------------------------------
+             makeup functions
+             ----------------------------------------------------------------
+             */
+            /// Write on screen
+            function w(txt, verbLevel) {
+                //$("msj").prepend("<p>" + txt + "</p>\n");
+                verbLevel = (typeof (verbLevel) != "undefined") ? verbLevel : verbosity;
+                var now = new Date();
+                var timeStamp = now.toLocaleString();
+                if (verbLevel <= verbosity) {
+                    document.getElementById("msj").innerHTML += "<p><strong>"
+                            + nowLog() + "</strong>: "
+                            + txt + "</p>\n";
+                    //+ document.getElementById("msj").innerHTML;
+                }
+                return txt;
+            }
+
+
+            /// Clear screen and then writes
+            function cw(txt, verbLevel) {
+                //$("msj").hml("");
+                verb = (typeof (verbLevel) != "undefined") ? verbLevel : verbosity;
+                if (verbLevel <= verbosity) {
+                    document.getElementById("msj").innerHTML = "";
+                }
+                return w(txt, verbLevel);
+            }
+
+
+            /// Just showing the time remaining to start the experiment
+            function countDown(seconds) {
+                $('#seconds').html("(in " + seconds + " secs.)");
+                if (seconds > 0) {
+                    setTimeout(countDown, 1000, --seconds);
+                } else {
+                    $('#seconds').html(null);
+                }
+            }
+
+
+            /*
+             ----------------------------------------------------------------
+             Client's info
+             ----------------------------------------------------------------
+             */
+            /// Constructor to save client information
+            function ClientInfo() {
+                this.id = null;
+                this.setId = function (id) {
+                    this.id = id;
+                    // Enviar info de Navigator
+                    // $$$
+                    w("Setting id...");
+                    $.ajax({
+                        type: 'POST',
+                        url: '/clientInformation',
+                        data: {
+                            clientId: this.id,
+                            userAgent: navigator.userAgent
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            console.log(w("Information about client succesfully sent to server..." + data.message));
+                        },
+                        error: function (xhr, type) {
+                            console.log(w("ERROR: Information about client couldn't be sent to server..."));
+                        }
+                    });
+                }
+                this.getId = function () {
+                    return this.id;
+                }
+            }
+
+
+
+            /*
+             ----------------------------------------------------------------
+             Forecasting tasks
+             ----------------------------------------------------------------
+             */
+
+
+
+            /**
+             * Example og forecasting function: Computes a new prediction using the average value
+             * @returns An object of type Forecasting, containing 2 values: val and test, where:
+             *   - val: Forecasting for last known value, and 
+             *   - test: Forecasting for next ("Unknown") value
+             */
+
+            function fore_average(data) {
+                // last number in DATA is realVal so it can not be used
+                var aleat = (-5 + Math.random(10));
+                var toRet = new Forecasting();
+                // myPrediction: Forecasting for last known value
+                toRet.SetVal(
+                        Math.floor((data.slice(0, data.length - 1).reduce(
+                                function (a, b) {
+                                    return a + b;
+                                })) / (data.length - 1) + aleat)
+                        );
+
+                // nextPrediction: Forecasting for next ("Unknown") value
+                toRet.SetTest(
+                        Math.floor((data.slice(0, data.length).reduce(
+                                function (a, b) {
+                                    return a + b;
+                                })) / (data.length) + aleat)
+                        );
+
+                return toRet;
+            }
+
+
+            /**
+             * Main function that tries to get a new best value for the forecasting
+             * @param ddbb Identifier of the problem
+             * @param time
+             * @param bestVal Best prediction for validation data
+             * @param realVal Real value expected for validation data
+             * @returns {undefined}
+             */
+            function solveProblem(ddbb, time, bestVal, realVal, data) {
+
+                var preds = fore_average(data);
+                preds.improves = false;
+                if (Math.abs(bestVal - realVal) > Math.abs(preds.GetVal() - realVal)) {
+                    preds.improves = true;
+                    $.ajax({
+                        type: 'POST'
+                        , url: '/takeANewSolution'
+                        , data: {
+                            problem: ddbb
+                            , time: time
+                            , valPrediction: preds.GetVal()
+                            , testPrediction: preds.GetTest()
+                        }
+                        , dataType: 'json'
+                        , message: "sendingAProblem"
+                        , success: function (data) {
+                            solveProblem(data.ddbb, data.time, data.bestVal, data.realVal, data.data);
+                        }
+                        , error: function (xhr, type) {
+                            console.log(w("ERROR: A new problem couldn't be retrieved from the server ..."));
+                        }
+                    });
+                }
+
+                if (forecasting) {
+                    improvedSolutions += preds.improves;
+                    w("Solving problem " + ddbb
+                            + " for time:  " + time
+                            + " <br/> - MyPrediction " + preds.GetVal()
+                            + " <br/> - Best validation up to now " + bestVal
+                            + " <br/> - Real validation desired " + realVal
+                            + " <br/> - Data " + data
+                            + ((preds.improves) ? ": <br/> - <strong>IMPROVES SOLUTION!</strong>" : "")
+                            , verb.ALL
+                            );
+                }
+            }
+
+
+            /**
+             * Asks for a problem to the server, receives the problem (i.e., description,
+             * and data), and tries to make a prediction.
+             * @returns {undefined}
+             */
+            function doForecasting() {
+                if (forecasting) {
+                    $.ajax({
+                        type: 'GET'
+                        , url: '/giveMeAProblem'
+                        , data: {
+                            clientId: this.id
+                        }
+                        , dataType: 'json'
+                        , message: "sendingAProblem"
+                        , success: function (data) {
+                            registerProblem(data.ddbb, data.time);
+                            solveProblem(data.ddbb, data.time, data.bestVal, data.realVal, data.data);
+                            doForecasting();
+                        }
+                        , error: function (xhr, type) {
+                            console.log(w("ERROR: A new problem couldn't be retrieved from the server ..."));
+                            doForecasting();
+                        }
+                    });
+                }
+                //  forecastingTime = setTimeout(doForecasting, milliSecs);
+            }
+
+
+            function endForecasting() {
+                source.close();
+                forecasting = false;
+                if (typeof (forecastingTime) != "undefined") {
+                    clearTimeout(forecastingTime);
+                }
+            }
+
+
+
+            /*
+             ----------------------------------------------------------------
+             Event's parsing
+             ----------------------------------------------------------------
+             */
+
+            function parseEvent(e) {
+                var data = JSON.parse(e.data);
+                var initTime = (new Date()).JSONparse(data.initTime);
+                var endTime = (new Date()).JSONparse(data.endTime);
+                experimentId = data.experimentId;
+                milliSecs = data.milliSecs;
+                //console.log(data);
+                switch (data.eventType) {
+                    case EVENTTYPES["NEXT EXPERIMENT"]:
+                        client.setId(data.clientId);
+                        experimentId = data.experimentId;
+                        milliSecs = data.milliSecs;
+                        w("Next experiment...");
+                        w("Your clientID is " + client.getId());
+                        w("Experiment " + experimentId
+                                + " will (should) start at " + initTime.log()
+                                + "... <span id='seconds'></span>");
+                        countDown(JSON.parse(data.seconds));
+                        break;
+                    case EVENTTYPES["RUNNING EXPERIMENT"]:
+                        client.setId(data.clientId);
+                        experimentId = data.experimentId;
+                        milliSecs = data.milliSecs;
+
+                        w("Running experiment...");
+                        w("Your clientID is " + client.getId());
+                        w("Experiment  " + experimentId
+                                + " did start at " + initTime.log()
+                                + ", i.e., "
+                                + JSON.parse(data.seconds)
+                                + " seconds ago."
+                                );
+                        break;
+                    case EVENTTYPES["FINISHED EXPERIMENT"]:
+                        cw("Experiment  " + experimentId
+                                + " did finish at " + endTime.log()
+                                + ", i.e., "
+                                + JSON.parse(data.seconds) + " seconds ago.");
+                        break;
+                    case EVENTTYPES["START EXPERIMENT"]:
+                        w("Starting experiment  " + experimentId
+                                + " at " + initTime.log()
+                                + ". It will last " + JSON.parse(data.seconds) + " seconds ");
+                        forecasting = true;
+                        doForecasting();
+                        break;
+                    case EVENTTYPES["END EXPERIMENT"]:
+                        w("Ending experiment  " + experimentId
+                                + " at " + endTime.log()
+                                );
+                        forecasting = false;
+                        endForecasting();
+                        showStatistics();
+                        break;
+                    case EVENTTYPES["KEEP ALIVE"]:
+                        w("<a href='https://www.youtube.com/watch?v=I_izvAbhExY' target=_'blank'>Ah, ah, ah, ah.. stayin' alive, stayin' alive... </a>"
+                                , verb.ALL);
+                        break;
+                    default:
+                        w('ERROR: Unknown ' + data.eventType
+                                + " received at " + date + "...");
+                        break;
+                }
+            }
+
+
+            /*
+             ------------------------------------------------------------------
+             Client's statistics
+             ------------------------------------------------------------------
+             */
+
+            /// Just to show some statistics
+            function registerProblem(ddbb, time) {
+                if (typeof (solvedProblems[ddbb]) == 'undefined') {
+                    solvedProblems[ddbb] = 0;
+                }
+                ++solvedProblems[ddbb];
+            }
+
+            /// Show statistics
+            function showStatistics() {
+                var total = 0;
+                w("Problems this client has solved: "
+                        , verb.STATS);
+                for (ps in solvedProblems) {
+                    w(ps + ": " + solvedProblems[ps]
+                            , verb.STATS);
+                    total += solvedProblems[ps];
+                }
+                w("Number of solved problems: " + total
+                        , verb.STATS);
+                w("Number of times the solution was improved: " + improvedSolutions
+                        , verb.STATS);
+            }
+
+
+
+
+
+            /*
+             ----------------------------------------------------------------
+             Main function
+             ----------------------------------------------------------------
+             */
+
+            function init() {
+                w("Starting! Waiting for server's first message...");
+                source = new EventSource("./setEventSource");
+                source.addEventListener("message", parseEvent, false);
+                client = new ClientInfo();
+            }
+
+        </script>
+    </head>
+    <body>
+        <h1>Testing SSE</h1>
+        <h2>Messages received from server</h2>
+        <div id="msj"></div>
+
+        <script> init();</script>
+</html>
