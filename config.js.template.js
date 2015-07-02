@@ -9,8 +9,8 @@
  */
 
 var GLOBALS = {
-    "ipaddress": process.env.OPENSHIFT_NODEJS_IP || "150.214.178.89"
+    "ipaddress": "127.0.0.1" || process.env.OPENSHIFT_NODEJS_IP
     , "keepAliveSeconds": 80 // Periodicity for KEEP ALIVE messages to be sent
     , "milliSecs": 5*1000 // Periodicity changin problem
-    , "port": process.env.OPENSHIFT_NODEJS_PORT || 8080
+    , "port": 8080 || process.env.OPENSHIFT_NODEJS_PORT
 }
