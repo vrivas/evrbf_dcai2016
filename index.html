@@ -50,10 +50,11 @@ and open the template in the editor.
                 "NOTHING": 0
                 , "MAIN": 1
                 , "STATS": 2
-                , "ALL": 4
+                , "DEBUGGING": 3
+                , "ALL": 100
             };
 
-            var verbosity = verb.STATS;
+            var verbosity = verb.ALL;
 
 
             /*
@@ -105,73 +106,130 @@ and open the template in the editor.
              ----------------------------------------------------------------
              */
             /// Constructor to save client information
-            function ClientInfo() {
-                this.id = null;
-                this.setId = function (id) {
-                    this.id = id;
-                    // Enviar info de Navigator
-                    // $$$
-                    w("Setting id...");
-                    $.ajax({
-                        type: 'POST',
-                        url: '/clientInformation',
-                        data: {
-                            clientId: this.id,
-                            userAgent: navigator.userAgent
-                        },
-                        dataType: 'json',
-                        success: function (data) {
-                            console.log(w("Information about client succesfully sent to server..." + data.message));
-                        },
-                        error: function (xhr, type) {
-                            console.log(w("ERROR: Information about client couldn't be sent to server..."));
+
+            var ClientInfo = (
+                    function () {
+
+                        var id = null;
+                        function _() {
                         }
-                    });
-                }
-                this.getId = function () {
-                    return this.id;
-                }
-            }
+
+                        _.prototype = {
+                            SetId: function (_p) {
+                                id = _p;
+                                // Enviar info de Navigator
+                                // $$$
+                                w("Setting id...");
+                                $.ajax({
+                                    type: 'POST'
+                                    , url: '/clientInformation'
+                                    , data: {
+                                        clientId: id,
+                                        userAgent: navigator.userAgent
+                                    }
+                                    , dataType: 'json'
+                                    , success: function (data) {
+                                        console.log(w("Information about client succesfully sent to server..." + data.message));
+                                    }
+                                    , error: function (xhr, type) {
+                                        console.log(w("ERROR: Information about client couldn't be sent to server..."));
+                                    }
+                                });
+                                return id;
+                            }
+                            , GetId: function () {
+                                return id;
+                            }
+
+                        };
+                        return _;
+                    })();
+
 
 
 
             /*
              ----------------------------------------------------------------
-             Forecasting tasks
+             Forecasting methods
              ----------------------------------------------------------------
              */
 
+            var foreMethods = [
+                {
+                    "name": "average"
+                    , "apply":
+                            /**
+                             * Example og forecasting function: Computes a new prediction using the average value
+                             * @returns An object of type Forecasting, containing 2 values: val and test, where:
+                             *   - val: Forecasting for last known value, and 
+                             *   - test: Forecasting for next ("Unknown") value
+                             */
 
+                                    function (data) {
+                                        // last number in DATA is realVal so it can not be used
+                                        var toRet = new Forecasting();
+                                        // Val: Forecasting for last known value
+                                        toRet.SetVal(
+                                                Math.floor((data.slice(0, data.length - 1).reduce(
+                                                        function (a, b) {
+                                                            return a + b;
+                                                        })) / (data.length - 1))
+                                                );
 
-            /**
-             * Example og forecasting function: Computes a new prediction using the average value
-             * @returns An object of type Forecasting, containing 2 values: val and test, where:
-             *   - val: Forecasting for last known value, and 
-             *   - test: Forecasting for next ("Unknown") value
-             */
+                                        // Test: Forecasting for next ("Unknown") value
+                                        toRet.SetTest(
+                                                Math.floor((data.reduce(
+                                                        function (a, b) {
+                                                            return a + b;
+                                                        })) / (data.length))
+                                                );
 
-            function fore_average(data) {
-                // last number in DATA is realVal so it can not be used
-                var aleat = (-5 + Math.random(10));
-                var toRet = new Forecasting();
-                // myPrediction: Forecasting for last known value
-                toRet.SetVal(
-                        Math.floor((data.slice(0, data.length - 1).reduce(
-                                function (a, b) {
-                                    return a + b;
-                                })) / (data.length - 1) + aleat)
-                        );
+                                        return toRet;
+                                    }
 
-                // nextPrediction: Forecasting for next ("Unknown") value
-                toRet.SetTest(
-                        Math.floor((data.slice(0, data.length).reduce(
-                                function (a, b) {
-                                    return a + b;
-                                })) / (data.length) + aleat)
-                        );
+                        }
+                , {
+                    "name": "random"
+                    , "apply":
+                            /**
+                             * Example og forecasting function: Computes a new prediction using a random value
+                             * @returns An object of type Forecasting, containing 2 values: val and test, where:
+                             *   - val: Forecasting for last known value, and 
+                             *   - test: Forecasting for next ("Unknown") value
+                             */
 
-                return toRet;
-            }
+                                    function (data) {
+                                        var min = data.slice(0, data.length - 1).reduce(
+                                                function (a, b) {
+                                                    return a < b ? a : b;
+                                                }
+                                        );
+                                        var max = data.slice(0, data.length - 1).reduce(
+                                                function (a, b) {
+                                                    return a > b ? a : b;
+                                                }
+                                        );
+
+                                        var toRet = new Forecasting();
+                                        // Val: Forecasting for last known value
+                                        toRet.SetVal(
+                                                Math.floor(min + Math.random() * (max - min + 1))
+                                                );
+
+                                        // Test: Forecasting for next ("Unknown") value
+                                        min = min < data[data.length - 1] ? min : data[data.length - 1];
+                                        max = max > data[data.length - 1] ? max : data[data.length - 1];
+
+                                        toRet.SetTest(
+                                                Math.floor(min + Math.random() * (max - min + 1))
+                                                );
+
+                                        return toRet;
+                                    }
+
+                        }
+                ,
+            ];
 
 
             /**
@@ -184,7 +242,11 @@ and open the template in the editor.
              */
             function solveProblem(ddbb, time, bestVal, realVal, data) {
 
-                var preds = fore_average(data);
+                // Randomly select a method to perform a forecasting
+                var method = foreMethods[Math.floor(Math.random() * foreMethods.length)];
+                w("Choosen method: " + method.name
+                        , verb.DEBUGGING);
+                var preds = method.apply(data);
                 preds.improves = false;
                 if (Math.abs(bestVal - realVal) > Math.abs(preds.GetVal() - realVal)) {
                     preds.improves = true;
@@ -196,6 +258,8 @@ and open the template in the editor.
                             , time: time
                             , valPrediction: preds.GetVal()
                             , testPrediction: preds.GetTest()
+                            , method: method.name
+                            , client: client.GetId()
                         }
                         , dataType: 'json'
                         , message: "sendingAProblem"
@@ -212,7 +276,8 @@ and open the template in the editor.
                     improvedSolutions += preds.improves;
                     w("Solving problem " + ddbb
                             + " for time:  " + time
-                            + " <br/> - MyPrediction " + preds.GetVal()
+                            + " <br/> - My Val " + preds.GetVal()
+                            + " <br/> - My Test " + preds.GetTest()
                             + " <br/> - Best validation up to now " + bestVal
                             + " <br/> - Real validation desired " + realVal
                             + " <br/> - Data " + data
@@ -278,11 +343,11 @@ and open the template in the editor.
                 //console.log(data);
                 switch (data.eventType) {
                     case EVENTTYPES["NEXT EXPERIMENT"]:
-                        client.setId(data.clientId);
+                        client.SetId(data.clientId);
                         experimentId = data.experimentId;
                         milliSecs = data.milliSecs;
                         w("Next experiment...");
-                        w("Your clientID is " + client.getId());
+                        w("Your clientID is " + client.GetId());
                         w("Experiment " + experimentId
                                 + " will (should) start at " + initTime.log()
                                 + "... <span id='seconds'></span>");
@@ -294,7 +359,7 @@ and open the template in the editor.
                         milliSecs = data.milliSecs;
 
                         w("Running experiment...");
-                        w("Your clientID is " + client.getId());
+                        w("Your clientID is " + client.GetId());
                         w("Experiment  " + experimentId
                                 + " did start at " + initTime.log()
                                 + ", i.e., "
@@ -324,7 +389,8 @@ and open the template in the editor.
                         showStatistics();
                         break;
                     case EVENTTYPES["KEEP ALIVE"]:
-                        w("<a href='https://www.youtube.com/watch?v=I_izvAbhExY' target=_'blank'>Ah, ah, ah, ah.. stayin' alive, stayin' alive... </a>"
+                        w("<a href='https://www.youtube.com/watch?v=I_izvAbhExY' "
+                                + "target=_'blank'>Ah, ah, ah, ah.. stayin' alive, stayin' alive... </a>"
                                 , verb.ALL);
                         break;
                     default:
@@ -385,7 +451,7 @@ and open the template in the editor.
         </script>
     </head>
     <body>
-        <h1>Testing SSE</h1>
+        <h1>Iconio: Time-Series forecasting by web browsers</h1>
         <h2>Messages received from server</h2>
         <div id="msj"></div>
 

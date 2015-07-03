@@ -29,9 +29,9 @@ var experimentStarted = null;
 
 var forecastingTimer = null;
 
-// 120 secs seems to be too much, and clients disconnect
 var keepAliveCount = 0;
 
+var sentProblems=0;
 
 /// Date indicating when the experiment will initTime
 var initTime, endTime;
@@ -58,7 +58,7 @@ function setInitTime() {
 function setEndTime() {
 
     // Seconds lasting the experiment.
-    var secondsDelay = 3;
+    var secondsDelay = 1;
     endTime = new Date();
     endTime.setSeconds(0, 0); // In order to compare only year, month, date, hours and minutes
     endTime.setTime(initTime.getTime() + secondsDelay * 1000);
@@ -86,11 +86,11 @@ function setClientId() {
 
 function changeForecasting() {
     console.log(nowLog(), ": Values forecasted: ");
-    console.log( " Problem  |  toForecast |  bestVal  | bestFore ");
+    console.log(" Problem  |  toForecast |  bestVal  | bestFore ");
     for (var i = 0; i < model.problems.length; ++i) {
         console.log("  ", model.problems[i]
-                ," | ", model.toForecast[forecasting]
-                ," | "
+                , " | ", model.toForecast[forecasting]
+                , " | "
                 , model.bestValForecasting[model.problems[i]][model.toForecast[forecasting]]
                 , " | "
                 , model.bestForecasting[model.problems[i]][model.toForecast[forecasting]]
@@ -310,7 +310,10 @@ var cb = {
         console.log(nowLog() + ": New Solution for " + req.body["problem"]
                 + " in time " + req.body["time"]
                 + " Validation solution: " + req.body["valPrediction"]
-                + " Test solution: " + req.body["testPrediction"]);
+                + " Test solution: " + req.body["testPrediction"]
+                + " Forecasting method: " + req.body["method"]
+                + " Client ID: " + req.body["client"]
+                );
         model.bestValForecasting[req.body["problem"]][req.body["time"]] = req.body["valPrediction"];
         model.bestForecasting[req.body["problem"]][req.body["time"]] = req.body["testPrediction"];
         allowCORS(res)
@@ -339,10 +342,12 @@ var cb = {
             , data: model.data.slice(sliceIni, sliceEnd)
         };
         res.write(JSON.stringify(toSend));
-        console.log(nowLog(), ": Sending a problem ", JSON.stringify(toSend)
-                , " Slice ini: ", sliceIni
-                , " Slice end: ", sliceEnd);
         res.send();
+        ++sentProblems;
+        /*console.log(nowLog(), ": Sending a problem ", JSON.stringify(toSend)
+                , " Slice ini: ", sliceIni
+                , " Slice end: ", sliceEnd);*/
+
     }
     /*, keepAlive: function (req, res) {
      allowCORS(res)
@@ -382,16 +387,16 @@ function main() {
             + "...\n");
     experimentStarted = false;
 
-    try{
-      // DDBB connection
-      //Comentado para mac
-      db.setNavigatorsModel(experimentId)
-      // Comentado para mac
-      db.connect("localhost", "test");
+    try {
+        // DDBB connection
+        //Comentado para mac
+        db.setNavigatorsModel(experimentId)
+        // Comentado para mac
+        db.connect("localhost", "test");
 
     } catch (e) {
-            console.log("Error in main due to connection with database: " +
-             e + "\n");
+        console.log("Error in main due to connection with database: " +
+                e + "\n");
     }
 
     try {

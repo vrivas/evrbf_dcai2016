@@ -17,9 +17,6 @@
  * @returns {Experiment}
  */
 
-
-
-
 var Experimemt = (
         function (_id
                 , _millisecs
