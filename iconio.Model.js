@@ -1,6 +1,6 @@
 var model = {
-    data: []
-    , indexes: []
+    data: [] // Real data stored
+    , indexes: []  
     , problems: []
     , toForecast: []
     , bestForecasting: []
@@ -19248,7 +19248,7 @@ model.indexes['420']['201301202345'] = 9600;
 
 for (var i = 0; i < model.problems.length; ++i) {
     model.bestForecasting[model.problems[i]] = [];
-    model.bestValForecasting[model.problems[i]] = []
+    model.bestValForecasting[model.problems[i]] = [];
 }
 // Do not forget to rest 1 to the month
 var toForecastIni = new Date(2013, 1 - 1, 14, 0, 0, 0, 0);

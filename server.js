@@ -10,11 +10,11 @@
 // Including libraries
 var fs = require('fs');
 eval(fs.readFileSync('config.js') + '');
-eval(fs.readFileSync('vrivas.Date.js') + '');
-eval(fs.readFileSync('vrivas.EventTypes.js') + '');
-eval(fs.readFileSync('vrivas.Model.js') + '');
-eval(fs.readFileSync('vrivas.Persistence.js') + '');
-//eval(fs.readFileSync('vrivas.Experiment.js') + '');
+eval(fs.readFileSync('iconio.Date.js') + '');
+eval(fs.readFileSync('iconio.EventTypes.js') + '');
+eval(fs.readFileSync('iconio.Model.js') + '');
+eval(fs.readFileSync('iconio.Persistence.js') + '');
+//eval(fs.readFileSync('iconio.Experiment.js') + '');
 
 
 /// Id for the experiment
@@ -31,7 +31,7 @@ var forecastingTimer = null;
 
 var keepAliveCount = 0;
 
-var sentProblems=0;
+var sentProblems = 0;
 
 /// Date indicating when the experiment will initTime
 var initTime, endTime;
@@ -99,6 +99,11 @@ function changeForecasting() {
     }
     forecasting = (++forecasting) % model.toForecast.length;
 }
+
+
+function errorMessage(message) {
+    return "!!!! " + message;
+}
 /**
  * Object containing many callbacks dealing with server-client communications
  * @type Object
@@ -109,13 +114,13 @@ var cb = {
      */
     processSetEventSource: function (req, res) {
         var now = new Date();
-        var clientId = setClientId();
+        var clientID = setClientId();
         if (now.getTime() < initTime.getTime()) {
-            this.infoStart(res, clientId);
+            this.infoStart(res, clientID);
             return;
         }
         if (initTime.getTime() <= now.getTime() && now.getTime() <= endTime.getTime()) {
-            this.infoRunning(res, clientId);
+            this.infoRunning(res, clientID);
             return;
         }
         if (now.getTime() > endTime.getTime()) {
@@ -133,13 +138,13 @@ var cb = {
      * @param {object} arguments Set or arguments, being [0] res and [1] req
      * @returns {undefined}
      */
-    , infoStart: function (res, clientId) {
+    , infoStart: function (res, clientID) {
         var toSend = {
             eventType: EVENTTYPES["NEXT EXPERIMENT"]
             , initTime: initTime.JSONstringify()
             , endTime: endTime.JSONstringify()
             , seconds: parseInt((initTime - (new Date())) / 1000)
-            , clientId: clientId
+            , clientID: clientID
             , experimentId: experimentId
             , milliSecs: GLOBALS.milliSecs
         };
@@ -160,13 +165,13 @@ var cb = {
      * @param {object} arguments Set or arguments, being [0] res and [1] req
      * @returns {undefined}
      */
-    , infoRunning: function (res, clientId) {
+    , infoRunning: function (res, clientID) {
         var toSend = {
             eventType: EVENTTYPES["RUNNING EXPERIMENT"]
             , initTime: initTime.JSONstringify()
             , endTime: endTime.JSONstringify()
             , seconds: parseInt(((new Date() - initTime)) / 1000)
-            , clientId: clientId
+            , clientID: clientID
             , experimentId: experimentId
             , milliSecs: GLOBALS.milliSecs
         };
@@ -240,6 +245,8 @@ var cb = {
                 , milliSecs: GLOBALS.milliSecs
             };
             content = "data: " + JSON.stringify(toSend) + "\n\n";
+
+            console.log("Experiment finished... ");
         }
 
         // If no information has to be sent, just send a keep alive message
@@ -295,7 +302,7 @@ var cb = {
         }
 
 // Storing in database
-        db.saveNavigatorInfo(req.body["clientId"], req.body["userAgent"]);
+        db.saveNavigatorInfo(req.body["clientID"], req.body["userAgent"]);
         allowCORS(res)
         res.writeHead(200, {"Content-type": "application/json"});
         res.write(JSON.stringify({"message": "ok"}));
@@ -303,32 +310,43 @@ var cb = {
     }
 
     , takeANewSolution: function (req, res) {
-        for (b in req.body) {
-            console.log(b + ": " + req.body[b]);
-        }
+        var ns = new NewSolution(
+                req.body["problem"]
+                , req.body["time"]
+                , req.body["valPrediction"]
+                , req.body["valReal"]
+                , req.body["testPrediction"]
+                , model.data[model.indexes[req.body["problem"].substr(0, 3)][req.body["time"]]]
+                , req.body["method"]
+                , req.body["clientID"]
 
-        console.log(nowLog() + ": New Solution for " + req.body["problem"]
-                + " in time " + req.body["time"]
-                + " Validation solution: " + req.body["valPrediction"]
-                + " Test solution: " + req.body["testPrediction"]
-                + " Forecasting method: " + req.body["method"]
-                + " Client ID: " + req.body["client"]
                 );
+
+        console.log(nowLog(), ns.forLog());
+
         model.bestValForecasting[req.body["problem"]][req.body["time"]] = req.body["valPrediction"];
         model.bestForecasting[req.body["problem"]][req.body["time"]] = req.body["testPrediction"];
+
+        db.saveNewSolution(ns);
+
         allowCORS(res)
         res.writeHead(200, {"Content-type": "application/json"});
         res.write(JSON.stringify({"message": "ok"}));
         res.send();
     }
     , giveMeAProblem: function (req, res) {
+        for (var i=0; i<req.params.length; ++i ) {
+            console.log(req.params[i]);
+        }
+        console.log( "End of parameters...");
         var
                 nData = 2 + Math.floor(Math.random() * 50)  // 50: Magic number ???
                 , ddbb = model.problems[Math.floor(Math.random() * model.problems.length)]
                 , time = model.toForecast[forecasting]
                 , bestVal = model.bestValForecasting[ddbb][time]
-                , realVal = model.data[model.indexes[ddbb.substr(0, 3)][time] - 1]
+                , realVal = model.data[model.indexes[ddbb.substr(0, 3)][time] - 1];
 
+        db.saveProblemRequest(ddbb, time, req.param("clientID"));
         allowCORS(res)
         res.writeHead(200, {"Content-type": "application/json"});
         var sliceEnd = model.indexes[ddbb.substr(0, 3)][time],
@@ -344,9 +362,11 @@ var cb = {
         res.write(JSON.stringify(toSend));
         res.send();
         ++sentProblems;
-        /*console.log(nowLog(), ": Sending a problem ", JSON.stringify(toSend)
+        console.log(nowLog(), ": Sending a problem ", JSON.stringify(toSend)
                 , " Slice ini: ", sliceIni
-                , " Slice end: ", sliceEnd);*/
+                , " Slice end: ", sliceEnd
+                , "Client ID: ", req.param("clientID")
+                );
 
     }
     /*, keepAlive: function (req, res) {
@@ -390,13 +410,15 @@ function main() {
     try {
         // DDBB connection
         //Comentado para mac
-        db.setNavigatorsModel(experimentId)
+        db.setModels(experimentId)
         // Comentado para mac
         db.connect("localhost", "test");
 
     } catch (e) {
-        console.log("Error in main due to connection with database: " +
-                e + "\n");
+        console.log(
+                errorMessage("Error in main due to connection with database: "
+                        + e)
+                );
     }
 
     try {
@@ -410,6 +432,8 @@ function main() {
             cb.clientInformation(req, res, mongoose);
         });
         app.get('/giveMeAProblem', function (req, res) {
+           console.log(" es " +req.param("clientID"));
+        
             cb.giveMeAProblem(req, res);
         });
 
@@ -417,7 +441,7 @@ function main() {
             cb.takeANewSolution(req, res);
         });
     } catch (e) {
-        console.log("Error in main due to any app.ACTION: " + e + "\n");
+        console.log(errorMessage("Error in main due to any app.ACTION: " + e));
     }
 
     try {
@@ -428,7 +452,7 @@ function main() {
             console.log('Example app listening at http://%s:%s', host, port);
         });
     } catch (e) {
-        console.log("Error in main due to app.listen: " + e + "\n");
+        console.log(errorMessage("Error in main due to app.listen: " + e));
     }
 
     return 1;
