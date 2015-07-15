@@ -16,7 +16,7 @@ var Schema = mongoose.Schema
 /// Fields containing navigators' information
 var navigatorSchema = new Schema({
     id: ObjectId
-    , clientId: String
+    , clientID: String
     , userAgent: String
     , date: {type: Date, default: Date.now}
 });
@@ -75,7 +75,7 @@ var db = {
     saveNavigatorInfo: function (clientId, userAgent) {
         this.navigatorModel.create(
                 {
-                    'clientId': clientId
+                    'clientID': clientId
                     , 'userAgent': userAgent
                 }
         , function (err, small) {

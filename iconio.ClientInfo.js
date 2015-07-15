@@ -21,7 +21,7 @@ ClientInfo.prototype.SetId = function (_p) {
         type: 'POST'
         , url: '/clientInformation'
         , data: {
-            clientId: id,
+            clientID: id,
             userAgent: navigator.userAgent
         }
         , dataType: 'json'
