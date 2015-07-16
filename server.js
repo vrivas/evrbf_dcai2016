@@ -47,21 +47,14 @@ function minDist(target, cand1, cand2) {
 }
 
 function setInitTime() {
-    // Minutes to wait until experiment starts.
-    var minutesDelay = 1;
-    initTime = new Date();
-    initTime.setSeconds(0, 0); // In order to compare only year, month, date, hours and minutes
-    initTime.setTime(initTime.getTime() + minutesDelay * 60 * 1000);
-    //initTime.setHours(17, 05, 0, 0);
+    initTime = new Date(GLOBALS.initTime);
+    initTime.setSeconds(0,0);
 }
 
 function setEndTime() {
-
-    // Seconds lasting the experiment.
-    var secondsDelay = 1;
     endTime = new Date();
     endTime.setSeconds(0, 0); // In order to compare only year, month, date, hours and minutes
-    endTime.setTime(initTime.getTime() + secondsDelay * 1000);
+    endTime.setTime(initTime.getTime() + GLOBALS.secondsLasting * 1000);
 }
 
 function setExperimentTime() {
