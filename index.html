@@ -14,11 +14,44 @@ and open the template in the editor.
 
 
         <script src="./zepto.min.js">// Including zepto to make AJAX calls</script>
+        <!--<script data-main="./iconio.jsEO.Main" src="./require.js">// Including require library</script>-->
         <script src="./iconio.Date.js"></script>
         <script src="./iconio.EventTypes.js"></script>
         <script src="./iconio.ForecastOutput.js"></script>
         <script src="./iconio.ForecastMethods.js"> // Including the foreMethods array</script>
         <script src="./iconio.ClientInfo.js"> // Including the foreMethods array</script>
+
+
+        <!-- Including jsEO -->
+        <!--
+        <script src="./jseo/mootools/mootools-core-full-compat.js"></script>
+
+        <script src="./jseo/jsEO/core/jsEOUtils.js"></script>
+        <script src="./jseo/jsEO/core/jsEO.js"></script>
+        <script src="./jseo/jsEO/core/jsEOIndividual.js"></script>
+        <script src="./jseo/jsEO/core/jsEOPopulation.js"></script>
+        <script src="./jseo/jsEO/core/jsEOOperator.js"></script>
+        <script src="./jseo/jsEO/core/jsEOOperatorsWheel.js"></script>
+        <script src="./jseo/jsEO/core/jsEOAlgorithm.js"></script>
+
+        <script src="./jseo/jsEO/core/algorithms/jsEOGA.js"></script>
+
+        <script src="./jseo/jsEO/core/operators/jsEOOpSelectorTournament.js"></script>
+
+        <script src="./jseo/jsEO/jsEOFloatVector/jsEOFVIndividual.js"></script>
+        <script src="./jseo/jsEO/jsEOFloatVector/jsEOFVOpMutation.js"></script>
+        <script src="./jseo/jsEO/jsEOFloatVector/jsEOFVOpCrossOver.js"></script>
+        <script src="./jseo/jsEO/jsEOFloatVector/jsEOFVGA.js"></script>
+
+        <script src="./iconio.jsEO.Main.js"></script>
+        -->
+
+        <!-- Including jsRBFNN -->
+        <script src="./jsRBFNN/namespace.js">//Loading namespace for js.RBFNN</script>
+        <script src="./jsRBFNN/RBFNeuron.js">//Loading the neurons</script>
+        <script src="./jsRBFNN/RBFNNet.js">//Loading the nets</script>
+        <script src="./iconio.jsRBFNN.Main.js"></script>
+
 
         <script>
             var now = null;
@@ -327,6 +360,5 @@ and open the template in the editor.
         <h1>ICONIO: Web browsers forecasting time-series</h1>
         <h2>Messages received from server</h2>
         <div id="msj"></div>
-
         <script> init();</script>
 </html>
