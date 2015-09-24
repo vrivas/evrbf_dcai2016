@@ -30,4 +30,5 @@ js_rbfnn.distance = function (a, b) {
                 return a + b;
             }, 0)
             );
-}
+};
+

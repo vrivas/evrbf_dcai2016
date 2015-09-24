@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 var logea = true;
 var iconio_jsRBFNN = {
-    , "centersRate": 0.5
+    "centersRate": 0.5
     , "main": function (data) {
-
         // Creating ts samples from raw data
         // We have to remove 1 since last value is for test
         var sampleSize = Math.floor(Math.random() * (data.length - 1) / 2) + 1;
@@ -36,7 +36,7 @@ var iconio_jsRBFNN = {
 
 
         // Creating net
-        var net = new js_rbfnn.RBFNNet(samples.map(function (e) {
+        var net = new js_rbfnn.RBFNNet(centers.map(function (e) {
             return new js_rbfnn.RBFNeuron(e.inputs, radius);
         }));
 
@@ -66,10 +66,10 @@ var iconio_jsRBFNN = {
         toRet.SetTest(
                 data.length
                 );
-        console.log("jsRBFNN funcionando ");
+        console.log("jsRBFNN running ");
         return toRet;
     }
-}
+};
 
 foreMethods = []; // !!!!Temporal para que solo llame a este método. Luego hay que quitarlo
 //Adding this GA method to the foreMethods array

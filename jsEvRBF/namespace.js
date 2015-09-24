@@ -1,14 +1,13 @@
 /**
-* @file ${name}
-* @brief Put the description here!!!!
-* @date ${date?date?string("dd/MMM/yyyy, hh:mm")}
-* @author ${project.organization!user}
+* @file jsEvRBF/namespace.js
+* @brief Put the description here
+* @date 24/sep/2015, 12:00
+* @author Victor M. Rivas Santos <vrivas@ujaen.es>
 *         Geneura Team (http://geneura.wordpress.com)
-*/
-/*
+*
 * --------------------------------------------
 *
-* Copyright (C) ${date?date?string("yyyy")} ${project.organization!user}
+* Copyright (C) 2015 Victor M. Rivas Santos <vrivas@ujaen.es>
 *
 * This program is free software; you can redistribute it and/or
 * modify it under the terms of the GNU General Public License
@@ -24,3 +23,6 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+/// Namespace for EvRBF
+var js_evrbf = {};
