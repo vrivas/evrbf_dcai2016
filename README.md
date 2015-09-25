@@ -12,10 +12,11 @@ In order to install:
 - Clone this repo
 - Execute in your terminal:  `npm install`
 - Create a config.js from config.js.template.js
-    - You can use locahost as host and 8080 as port if you want to easily execute in your own computer
+    - You can use `locahost` as host, and `8080` as port if you want to easily execute in your own computer
 
-In order to execute
+In order to execute:
 - You need to *previously install and execute* mongodb (https://www.mongodb.org/)
+    - Usually, once installed, executing mongo is as easy as typing `sudo mongod` 
 - Execute in your terminal: `node server`
 - Open your web browser (different from Internet Explorer, please) and connect to http://localhost:8080
-    - You should change both server and port accordingly to what you write in config.js
+    - You should change both server (localhost) and port (8080) accordingly to what you write in config.js
