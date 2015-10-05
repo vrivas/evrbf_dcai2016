@@ -42,7 +42,7 @@ try {
      */
 
     ns.RBFNNet = new Class({
-        Extends: jsEO // It's an EO
+        Extends: jsEO // An RBFNNet is an EO
         , initialize: function (_neurons, _weights, _bias) {
             /// Initalize jsEO
             this.parent();
@@ -54,7 +54,7 @@ try {
             });
             /// Bias (and "extra-weigth")
             this.bias = _bias || 0;
-            jsEOUtils.debugln("Initializing a jsEvRBF ");
+            jsEOUtils.debugln("Initializing a RBFNNet ");
         }
         /**
          * Obtanis an output given an entry point using the different neurons
@@ -114,7 +114,7 @@ try {
 
     });
     /**
-     * Function to test if RBFNNet works correctly
+     * Function to test if RBFNNet works properly
      * @returns {undefined}
      */
     ns.test = function (_id) {
@@ -128,7 +128,7 @@ try {
         msg = "Before training: \n"
                 + "     700 is " + tmp.apply([-100, -100]) + "\n"
                 + "     , -700 is " + tmp.apply([100, 100]);
-        tmp.setFitness(ns.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]));
+        tmp.setFitness(jsEOUtils.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]));
         msg += "\n"
                 + "Fitness is " + tmp.getFitness();
         if (_id) {
@@ -146,7 +146,7 @@ try {
         msg = "After training: \n"
                 + "     700 is " + tmp.apply([-100, -100]) + "\n"
                 + "     , -700 is " + tmp.apply([100, 100]);
-        tmp.setFitness(ns.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]));
+        tmp.setFitness(jsEOUtils.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]));
         msg += "\n"
                 + "Fitness is " + tmp.getFitness();
         if (_id) {
@@ -154,7 +154,7 @@ try {
         } else {
             console.log(msg + "\n");
         }
-    }
+    };
 } catch (e) {
     console.log(e.message);
 }

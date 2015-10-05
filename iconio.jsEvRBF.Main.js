@@ -5,11 +5,13 @@
  */
 
 var logea = true;
-var iconio_jsRBFNN = {
+var iconio_jsEvRBF = {
     "centersRate": 0.5
     , "main": function (data) {
         // Creating ts samples from raw data
         // We have to remove 1 since last value is for test
+        var ag=new js_evrbf( data, 2, 3);
+        /*
         var sampleSize = Math.floor(Math.random() * (data.length - 1) / 2) + 1;
         var samples = [];
         var centers = [];
@@ -31,7 +33,7 @@ var iconio_jsRBFNN = {
 
         // Computing average distance (for radius)
         var radius = (centers.reduce(function (prev, e, i) {
-            return (i == 0 ? 0 : prev + jsEOUtils.distance(centers[i - 1], e));
+            return (i == 0 ? 0 : prev + js_rbfnn.distance(centers[i - 1], e));
         }, 0)) / centers.length;
 
 
@@ -55,6 +57,8 @@ var iconio_jsRBFNN = {
             console.log(net);
             logea = false;
         }
+        
+        */
         // Instatiating the object to return
         var toRet = new ForecastOutput();
         // last number in DATA is realVal so it can not be used
@@ -66,7 +70,7 @@ var iconio_jsRBFNN = {
         toRet.SetTest(
                 data.length
                 );
-        console.log("jsRBFNN running ");
+        console.log("jsEvRBF running ");
         return toRet;
     }
 };
@@ -75,8 +79,8 @@ foreMethods = []; // !!!!Temporal para que solo llame a este método. Luego hay 
 //Adding this GA method to the foreMethods array
 foreMethods.push(
         {
-            "name": "jsRBFNN"
-            , "apply": iconio_jsRBFNN.main
+            "name": "jsEvRBF"
+            , "apply": iconio_jsEvRBF.main
         }
 );
 

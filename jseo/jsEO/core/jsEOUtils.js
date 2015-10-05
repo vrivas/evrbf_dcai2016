@@ -22,29 +22,29 @@
 
 
 var jsEOUtils = {
-    verbose: false,
-    bestFit: [],
-    worstFit: [],
-    averageFit: [],
-    idOutput: "jsEOConsole",
-    idGraphics: "jsEOGraphics",
-    problemID: null,
-    getURL: "http://jseo.vrivas.es/php/sending.php",
-    sendURL: "http://jseo.vrivas.es/php/receiving.php",
-    proxyURL: "http://jseo.vrivas.es/php/proxy.php",
-    setOutput: function(_id) {
+    verbose: false
+    , bestFit: []
+    , worstFit: []
+    , averageFit: []
+    , idOutput: "jsEOConsole"
+    , idGraphics: "jsEOGraphics"
+    , problemID: null
+    , getURL: "http://jseo.vrivas.es/php/sending.php"
+    , sendURL: "http://jseo.vrivas.es/php/receiving.php"
+    , proxyURL: "http://jseo.vrivas.es/php/proxy.php"
+    , setOutput: function (_id) {
         if (typeof _id != 'undefined') {
             this.idOutput = _id;
         }
         return this;
-    },
-    setGraphics: function(_id) {
+    }
+    , setGraphics: function (_id) {
         if (typeof _id != 'undefined') {
             this.idGraphics = _id;
         }
         return this;
-    },
-    print: function(_message, _id) {
+    }
+    , print: function (_message, _id) {
         if (typeof _id == 'undefined' || !_id) {
             _id = this.idOutput;
         }
@@ -53,21 +53,21 @@ var jsEOUtils = {
             element.innerHTML += _message;
         }
         return this;
-    },
-    replace: function(_message, _id) {
+    }
+    , replace: function (_message, _id) {
         this.clear(_id);
         this.print(_message, _id);
         return this;
-    },
-    println: function(_message, _id) {
+    }
+    , println: function (_message, _id) {
         this.print(_message + "<br/>", _id);
         return this;
-    },
-    h2: function(_message, _id) {
-        this.print("<h2>"+_message + "</h2>\n", _id);
+    }
+    , h2: function (_message, _id) {
+        this.print("<h2>" + _message + "</h2>\n", _id);
         return this;
-    },
-    clear: function(_id) {
+    }
+    , clear: function (_id) {
         if (typeof _id == 'undefined' || !_id) {
             _id = this.idOutput;
         }
@@ -76,8 +76,8 @@ var jsEOUtils = {
             element.innerHTML = "";
         }
         return this;
-    },
-    debug: function(_message, _id) {
+    }
+    , debug: function (_message, _id) {
         if (!this.verbose)
             return;
         if (typeof _id == 'undefined' || !_id) {
@@ -88,53 +88,53 @@ var jsEOUtils = {
             element.innerHTML += "<pre>" + _message + "</pre>";
         }
         return this;
-    },
-    debugln: function(_message, _id) {
+    }
+    , debugln: function (_message, _id) {
         this.debug(_message + "<br/>", _id);
         return this;
-    },
-    remove_commas: function(_str) {
+    }
+    , remove_commas: function (_str) {
         if (typeof _str == 'undefined' || !_str) {
             return "";
         }
         return _str.replace(/,/g, '');
-    },
-    setVerbose: function(boolean) {
+    }
+    , setVerbose: function (boolean) {
         this.verbose = boolean;
         return this;
-    },
-    getVerbose: function() {
+    }
+    , getVerbose: function () {
         return this.verbose;
-    },
-    setProblemId: function(_id) {
+    }
+    , setProblemId: function (_id) {
         this.problemID = this.remove_commas(_id);
         return this;
-    },
-    getProblemId: function() {
+    }
+    , getProblemId: function () {
         return this.remove_commas(this.problemID);
-    },
-    setGetURL: function(_url) {
+    }
+    , setGetURL: function (_url) {
         this.getURL = _url;
         return this;
-    },
-    getGetURL: function() {
+    }
+    , getGetURL: function () {
         return this.getURL;
-    },
-    setSendURL: function(_url) {
+    }
+    , setSendURL: function (_url) {
         this.sendURL = _url;
         return this;
-    },
-    getSendURL: function() {
+    }
+    , getSendURL: function () {
         return this.sendURL;
-    },
-    setProxyURL: function(_url) {
+    }
+    , setProxyURL: function (_url) {
         this.proxyURL = _url;
         return this;
-    },
-    getProxyURL: function() {
+    }
+    , getProxyURL: function () {
         return this.proxyURL;
-    },
-    showPop: function(_aPop, _message, _numIndiv) {
+    }
+    , showPop: function (_aPop, _message, _numIndiv) {
         if (typeof _message != 'undefined' && _message) {
             jsEOUtils.print("<h2>" + _message + "</h2>");
         }
@@ -152,24 +152,24 @@ var jsEOUtils = {
                 "<th class='fit'>Fitness</th>\n " +
                 "</tr>\n ";
         for (var i = 0; i < _numIndiv; ++i) {
-            var chr=_aPop.getAt(i).getChromosome();
-            if( Object.prototype.toString.call(chr)== '[object Array]' ) {
-                chr=chr.toString();
+            var chr = _aPop.getAt(i).getChromosome();
+            if (Object.prototype.toString.call(chr) == '[object Array]') {
+                chr = chr.toString();
             }
             tb += "<tr>\n " +
                     "<td class='nInd'>" + i + "</td>\n" +
-                    "<td class='chr'><span title='"+chr+"'>" + 
-                    ((chr.length<=50)?chr:(chr.substr(0, 50)+"..."))+ "</span></td>\n" +
+                    "<td class='chr'><span title='" + chr + "'>" +
+                    ((chr.length <= 50) ? chr : (chr.substr(0, 50) + "...")) + "</span></td>\n" +
                     "<td class='chr'>" + _aPop.getAt(i).getFitness() + "</td>\n" +
                     "</tr>\n ";
 
         }
-        tb+="</table>\n";
+        tb += "</table>\n";
         this.print(tb);
 
         return this;
-    },
-    averageFitness: function(_aPop) {
+    }
+    , averageFitness: function (_aPop) {
         var toRet = 0;
         if (typeof _aPop == 'undefined' || _aPop.length() <= 0) {
             return toRet;
@@ -177,55 +177,55 @@ var jsEOUtils = {
         for (i = 0; i < _aPop.length(); ++i)
             toRet += _aPop.getAt(i).getFitness();
         return (toRet / _aPop.length());
-    },
-    getInputParam: function(_param, _default) {
+    }
+    , getInputParam: function (_param, _default) {
         var str = location.search.toLowerCase();
         var pos = str.indexOf((_param + "=").toLowerCase());
         return (pos < 0) ? _default : str.substring(str.indexOf("=", pos) + 1,
                 (str.indexOf("&", pos) >= 0) ? str.indexOf("&", pos) : str.length);
-    },
-    clearBestFitness: function() {
+    }
+    , clearBestFitness: function () {
         bestFitness.length = 0;
         return this;
-    },
-    clearWorstFitness: function() {
+    }
+    , clearWorstFitness: function () {
         worstFitness.length = 0;
         return this;
-    },
-    clearAverageFitness: function() {
+    }
+    , clearAverageFitness: function () {
         averageFitness.length = 0;
         return this;
-    },
-    clearStats: function() {
+    }
+    , clearStats: function () {
         this.clearAverageFitness();
         this.clearBestFitness();
         this.clearWorstFitness();
         return this;
-    },
-    recordBestFitness: function(_value) {
+    }
+    , recordBestFitness: function (_value) {
         this.bestFit.push(_value);
         return this;
-    },
-    recordWorstFitness: function(_value) {
+    }
+    , recordWorstFitness: function (_value) {
         this.worstFit.push(_value);
         return this;
-    },
-    recordAverageFitness: function(_value) {
+    }
+    , recordAverageFitness: function (_value) {
         this.averageFit.push(_value);
         return this;
-    },
-    recordStats: function(_worst, _average, _best) {
+    }
+    , recordStats: function (_worst, _average, _best) {
         this.recordWorstFitness(_worst);
         this.recordAverageFitness(_average);
         this.recordBestFitness(_best);
         return this;
-    },
-    drawBestFitness: function(_id) {
+    }
+    , drawBestFitness: function (_id) {
         if (typeof _id == 'undefined' || !_id) {
             _id = this.idGraphics;
         }
         google.load("visualization", "1", {packages: ["corechart"]});
-        google.setOnLoadCallback(function() {
+        google.setOnLoadCallback(function () {
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'Generation');
             data.addColumn('number', 'Fitness');
@@ -240,13 +240,13 @@ var jsEOUtils = {
             chart.draw(data, options);
         });
         return this;
-    },
-    drawWorstFitness: function(_id) {
+    }
+    , drawWorstFitness: function (_id) {
         if (typeof _id == 'undefined' || !_id) {
             _id = this.idGraphics;
         }
         google.load("visualization", "1", {packages: ["corechart"]});
-        google.setOnLoadCallback(function() {
+        google.setOnLoadCallback(function () {
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'Generation');
             data.addColumn('number', 'Fitness');
@@ -261,13 +261,13 @@ var jsEOUtils = {
             chart.draw(data, options);
         });
         return this;
-    },
-    drawAverageFitness: function(_id) {
+    }
+    , drawAverageFitness: function (_id) {
         if (typeof _id == 'undefined' || !_id) {
             _id = this.idGraphics;
         }
         google.load("visualization", "1", {packages: ["corechart"]});
-        google.setOnLoadCallback(function() {
+        google.setOnLoadCallback(function () {
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'Generation');
             data.addColumn('number', 'Fitness');
@@ -282,14 +282,14 @@ var jsEOUtils = {
             chart.draw(data, options);
         });
         return this;
-    },
-    drawStats: function(_message, _id) {
+    }
+    , drawStats: function (_message, _id) {
         if (typeof _id == 'undefined' || !_id) {
             _id = this.idGraphics;
         }
-        this.h2( _message, _id );
+        this.h2(_message, _id);
         google.load("visualization", "1", {packages: ["corechart"]});
-        google.setOnLoadCallback(function() {
+        google.setOnLoadCallback(function () {
             var data = new google.visualization.DataTable();
             data.addColumn('number', 'Generation');
             data.addColumn('number', 'Worst Fitness');
@@ -308,5 +308,40 @@ var jsEOUtils = {
             chart.draw(data, options);
         });
         return this;
+    }
+
+    /**
+     * Creates a random number between min and max, both of them included
+     * @param {type} min Lowest value
+     * @param {type} max Greatest value
+     * @returns {Number} Random number in the range [min,max]
+     */
+    , intRandom: function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    /**
+     * Computes euclidean distance between two arrays
+     * @param {array of floats} a First array
+     * @param {array of floats} b Second array
+     * @throws {RangeError} Error if lengths of a and b are differents
+     * @returns {Number} The euclidean distance
+     */
+    , distance: function (a, b) {
+        if (a.length != b.length)
+            throw new RangeError("Distance can't be computed: "
+                    + "points have different lengths; "
+                    + a.length + " vs " + b.length);
+        return Math.sqrt(
+                a.map(function (e, i) {
+                    return e - b[i];
+                })
+                .map(function (e) {
+                    return Math.pow(e, 2);
+                })
+                .reduce(function (a, b) {
+                    return a + b;
+                }, 0)
+                );
     }
 };
