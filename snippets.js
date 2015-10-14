@@ -46,7 +46,7 @@ var iconio_jsRBFNN = {
 
         // Computing average distance (for radius)
         var radius = (centers.reduce(function (prev, e, i) {
-            return (i == 0 ? 0 : prev + js_rbfnn.distance(centers[i - 1], e));
+            return (i == 0 ? 0 : prev + jsEOUtils.distance(centers[i - 1], e));
         }, 0)) / centers.length;
 
 

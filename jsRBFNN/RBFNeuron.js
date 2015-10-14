@@ -25,7 +25,7 @@ try {
          * @returns {Number} The neuron¡s output
          */
         this.apply = function (_point) {
-            return Math.exp(-Math.pow(js_rbfnn.distance(this.center, _point), 2) / (2 * Math.pow(this.radius, 2)));
+            return Math.exp(-Math.pow(jsEOUtils.distance(this.center, _point), 2) / (2 * Math.pow(this.radius, 2)));
         }
 
 

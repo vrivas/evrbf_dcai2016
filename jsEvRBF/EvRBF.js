@@ -46,7 +46,7 @@ try {
         , trainAlfa: 0.3
         , verbose: false
         , configure: false
-        , popSize: 50
+        , popSize: 2
         , tournamentSize: 2
         , xOverRate: 0.8
         , mutRate: 0.2
@@ -108,9 +108,8 @@ try {
                 _opGet.setApplicationRate(this.getIndividualsRate);
             }
             this.parent(_opSend, _opGet);
-            // Creating the patterns needed by the algorithm
-            this.splitTrnVal();
-            jsEOUtils.debugln("Initializing a jsEvRBF ");
+
+            jsEOUtils.debugln("Initializing the jsEvRBF object... ");
         }
         , splitTrnVal: function () {
             // Splitting into trn and val
@@ -134,9 +133,9 @@ try {
 
             }
 
-            console.log("Data: ", this.data);
-            console.log("trnSamples: ", this.trnSamples);
-            console.log("valSamples: ", this.valSamples);
+            console.log("  Data: ", this.data);
+            console.log("  trnSamples: ", this.trnSamples);
+            console.log("  valSamples: ", this.valSamples);
         }
 
         // The doConfigure method has to be fixed!!!
@@ -199,22 +198,13 @@ try {
                     }
                 }
 
-                console.log("Centers: ", centers);
-                var net = new js_rbfnn.RBFNNet(
-                        centers.map(function (e) {
-                            return new js_rbfnn.RBFNeuron(e, radii)
-                        }));
-                net.trainLMS(
-                        this.trnSamples.map(function (e) {
-                            return e.input;
-                        }) // INputs
-                        , this.trnSamples.map(function (e) {
-                            return e.output;
-                        })// Desired outputs
-                        , this.trainIterations // Iterations
-                        , this.trainAlfa); // Alfa
-                net.evaluate(_fitFn);
-                this.population.addIndividual(net);
+                //console.log("  Centers: ", centers);
+                this.population.addIndividual(
+                        new js_rbfnn.RBFNNet(
+                                centers.map(function (e) {
+                                    return new js_rbfnn.RBFNeuron(e, radii)
+                                }))
+                        );
             }
         }
         , run: function (_fitFn) {
@@ -223,9 +213,50 @@ try {
                 this.doConfigure();
                 return;
             }
+            
+            
+            // Creating the patterns needed by the algorithm
+            console.log("Creating patterns,  splitting TRN/VAL ");
+            this.splitTrnVal();
+
+            console.log("Creating population ");
+
             this.population = new jsEOPopulation();
             this.createIndividuals();
+
+            console.log("Training population ");
+            var tmpthis=this;
+            this.population.getPopulation().
+                    forEach(function (e) {
+                        e.trainLMS(
+                                tmpthis.trnSamples.map(function (e) {
+                                    return e.input;
+                                }) // INputs
+                                , tmpthis.trnSamples.map(function (e) {
+                                    return e.output;
+                                })// Desired outputs
+                                , tmpthis.trainIterations // Iterations
+                                , tmpthis.trainAlfa); // Alfa
+                    });
+
+            console.log("Evaluating population ");
+            this.population.evaluate(_fitFn, this.valSamples);
+
+            console.log("La población tiene ", this.population.getPopulation().length );
+
+            this.population.getPopulation().
+                    forEach(function (e, i) {
+                        console.log( "Net ", i, " fitness ", e.getFitness());
+                    });
+            
+            console.log("Sorting population ");
             this.population.sort();
+             this.population.getPopulation().
+                    forEach(function (e, i) {
+                        console.log( "Net ", i, " fitness ", e.getFitness());
+                    });
+
+            /*
             this.indivSelector = new jsEOOpSelectorTournament(this.tournamentSize,
                     Math.floor(this.popSize * this.replaceRate));
             this.operSelector = new jsEOOperatorsWheel();
@@ -246,20 +277,44 @@ try {
             jsEOUtils.showPop(this.population, "Final population", this.showing);
             jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
             //jsEOUtils.drawStats();
+            */
         }
 
     });
+
+    /**
+     * 
+     * @param {jsRBFNN} net The net to evaluate
+     * @param {Data Samples} valSamples The set of samples for the evaluation
+     * @returns {Real data} Used as fitness for the net
+     */
+    ns.fitnessFunction = function (net, valSamples) {
+        var toRet = 0;
+        toRet = valSamples.reduce(function (toRet, e) {
+            tr = net.apply(valSamples.inputs);
+            console.log("toret vale ", toRet);
+            console.log("el valor devuelto por la red es ", tr);
+            console.log("la salida esperada es ", valSamples.output);
+            d = jsEOUtils.distance(tr, valSamples.output);
+            console.log("la distancia es  ", d);
+            return toRet + d; //jsEOUtils.distance(net.apply(valSamples.inputs), valSamples.output);
+        });
+        console.log("El valor final de toRet es", toRet);
+        return toRet;
+    }
+
     /**
      * Function to test if EvRBF works properly
      * @returns {undefined}
      */
     ns.test = function (_id) {
+        console.log("Testing jsEvRBF...");
         var data = Array.apply(0, Array(20)).map(function (e, i) {
             return i * 10;
         })
         console.log(data);
         var tmp = new ns.jsEvRBF(data, 2, 3);
-        tmp.run();
+        tmp.run(ns.fitnessFunction);
         _id = document.getElementById(_id);
         var msg = "";
         if (_id) {
