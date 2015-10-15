@@ -16,7 +16,7 @@ try {
      * @returns {Neuron}
      */
     ns.RBFNeuron = function (_center, _radius) {
-        this.center = _center || null;
+        this.center = _center.slice() || null;
         this.radius = _radius || null;
 
         /**
@@ -28,7 +28,9 @@ try {
             return Math.exp(-Math.pow(jsEOUtils.distance(this.center, _point), 2) / (2 * Math.pow(this.radius, 2)));
         }
 
-
+        this.copy = function () {
+            return new ns.RBFNeuron(this.center, this.radius);
+        }
 
         /**
          * Test function for RBFNeuron

@@ -47,9 +47,9 @@ try {
             /// Initalize jsEO
             this.parent();
             /// Array storing the neurons of the hidden layer
-            this.neurons = _neurons || [];
+            this.neurons = (typeof _neurons!=='undefined' )?_neurons.slice(): [];
             /// Array storing the weights from every hidden neuron to the output; 1 by default
-            this.weights = _weights || this.neurons.map(function () {
+            this.weights = (typeof _weights!=='undefined' )?_weights.slice(): this.neurons.map(function () {
                 return 1;
             });
             /// Bias (and "extra-weigth")
@@ -69,7 +69,17 @@ try {
             }
             , this.bias);
         }
+        /**
+         * Creates a new net with the same that this one has
+         * @returns {RBFNNet} The ew net we have cretaed
+         */
+        , copy: function () {
+            return  new ns.RBFNNet(this.neurons.map( function(e) { return e.copy(); })
+                    , this.weights.slice()
+                    , this.bias);
 
+            jsEOUtils.debugln("Copying a RBFNNet ");
+        }
         /**
          * Using LMS to train a network
          * @param {Array of arrays of float} _inputs
