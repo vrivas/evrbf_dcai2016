@@ -26,15 +26,15 @@ var jsEOIndividual = new Class({
     , chromosome: null
     , initialize: function (_chromosome) {
         this.parent();
-        this.chromosome = _chromosome;
+        this.chromosome = _chromosome || null;
         jsEOUtils.debug("Inicializado un jsEOIndividual con chromosome " + this.chromosome +
                 "<br/>");
 
     }
     , copy: function () {
         var toRet = new jsEOIndividual();
-        toRet.fitness = this.fitness;
-        toRet.chromosome = this.chromosome;
+        toRet.fitness = (this.fitness.copy) ? this.fitness.copy() : this.fitness;
+        toRet.chromosome = (this.chromosome.copy) ? this.chromosome.copy() : this.chromosome;
         return toRet;
     }
     , getChromosome: function () {

@@ -6,8 +6,9 @@
 
 try {
     // Namespace has to have been loaded
-    ns = js_rbfnn;
 
+    if (typeof js_rbfnn === "undefined")
+        throw new ReferenceError("RBFNeuron won't work since jsRBFNN/namespace.js was not loaded.");
 
     /**
      * Neuron's (for RBFNN) constructor
@@ -15,8 +16,8 @@ try {
      * @param {float} _radius The radius or width of the Gaussian function
      * @returns {Neuron}
      */
-    ns.RBFNeuron = function (_center, _radius) {
-        this.center = _center.slice() || null;
+    js_rbfnn.RBFNeuron = function (_center, _radius) {
+        this.center = (typeof _center !== 'undefined') ? _center.slice() : [];
         this.radius = _radius || null;
 
         /**
@@ -29,7 +30,7 @@ try {
         }
 
         this.copy = function () {
-            return new ns.RBFNeuron(this.center, this.radius);
+            return new js_rbfnn.RBFNeuron(this.center, this.radius);
         }
 
         /**
@@ -37,9 +38,34 @@ try {
          * @returns {undefined}
          */
         this.test = function () {
-            var tmp = new ns.RBFNeuron([1, 2], 3);
-            alert(tmp.apply([1, 2])); // Must return 1
-            alert(tmp.apply([1, 2, 3])); // Must throw an exception
+            var tmp = new js_rbfnn.RBFNeuron([1, 2], 3);
+            try {
+                alert(tmp.apply([1, 2])); // Must return 1
+                alert(tmp.apply([1, 2, 3])); // Must throw an exception
+            } catch (e) {
+                console.log("Capturing exception: ", e.message)
+            }
+            try {
+                tmp2 = tmp.copy();
+                alert(tmp2.apply([1, 2])); // Must return 1
+                
+                console.log( "Changing copy... does affect original?");
+                console.log( " - Before");
+                console.log( "tmp.center[0] is ", tmp.center[0] );
+                console.log( "tmp2.center[0] is ", tmp2.center[0] );
+                console.log( "tmp.radius is ", tmp.radius );
+                console.log( "tmp2.radius] is ", tmp2.radius );
+                tmp2.center[0]=89;
+                tmp2.radius=12;
+                console.log( " - After (center and radius should be different: 89 and 12, resp.");
+                console.log( "tmp.center[0] is ", tmp.center[0] );
+                console.log( "tmp2.center[0] is ", tmp2.center[0] );
+                console.log( "tmp.radius is ", tmp.radius );
+                console.log( "tmp2.radius] is ", tmp2.radius );
+                
+            } catch (e) {
+                console.log("Capturing exception: ", e.message)
+            }
         }
     }
 

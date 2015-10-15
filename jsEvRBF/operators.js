@@ -35,7 +35,7 @@ try {
     // Sortcut for EvRBF's namespace
     ns = js_evrbf;
     /*
-     ns.jsXOver = new Class({// ### Aün sin hacer
+     js_evrbf.jsXOver = new Class({// ### Aün sin hacer
      Extends: jsEOOperator,
      initialize: function (_applicationRate, _bitsRate) {
      this.parent(_applicationRate);
@@ -91,7 +91,7 @@ try {
      * Centers Mutator... transitory until re-reading the original paper
      * @type Class
      */
-    ns.jsCenterMut = new Class({// ### Aün sin hacer
+    js_evrbf.jsCenterMut = new Class({// ### Aün sin hacer
         Extends: jsEOOperator,
         initialize: function (_applicationRate, _centersRate) {
             this.parent(_applicationRate);

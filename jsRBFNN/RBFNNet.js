@@ -32,7 +32,6 @@ try {
         throw new ReferenceError("RBFNNet won't work since jsRBFNN/RBFNeuron.js was not loaded.");
     if (typeof jsEO === "undefined")
         throw new ReferenceError("RBFNNet won't work since jsEO was not loaded.");
-    ns = js_rbfnn;
     /**
      * RBFNN (for RBFNN) constructor. Produces a SINGLE OUTPUT
      * @param {array of RBFNeuron} _neurons The neurons of the hidden layer
@@ -41,15 +40,15 @@ try {
      * @returns {Neuron}
      */
 
-    ns.RBFNNet = new Class({
+    js_rbfnn.RBFNNet = new Class({
         Extends: jsEO // An RBFNNet is an EO
         , initialize: function (_neurons, _weights, _bias) {
             /// Initalize jsEO
             this.parent();
             /// Array storing the neurons of the hidden layer
-            this.neurons = (typeof _neurons!=='undefined' )?_neurons.slice(): [];
+            this.neurons = (typeof _neurons !== 'undefined') ? _neurons.slice() : [];
             /// Array storing the weights from every hidden neuron to the output; 1 by default
-            this.weights = (typeof _weights!=='undefined' )?_weights.slice(): this.neurons.map(function () {
+            this.weights = (typeof _weights !== 'undefined') ? _weights.slice() : this.neurons.map(function () {
                 return 1;
             });
             /// Bias (and "extra-weigth")
@@ -74,11 +73,12 @@ try {
          * @returns {RBFNNet} The ew net we have cretaed
          */
         , copy: function () {
-            return  new ns.RBFNNet(this.neurons.map( function(e) { return e.copy(); })
+            jsEOUtils.debugln("Copying a RBFNNet ");
+            return  new js_rbfnn.RBFNNet(this.neurons.map(function (e) {
+                return e.copy();
+            })
                     , this.weights.slice()
                     , this.bias);
-
-            jsEOUtils.debugln("Copying a RBFNNet ");
         }
         /**
          * Using LMS to train a network
@@ -127,10 +127,10 @@ try {
      * Function to test if RBFNNet works properly
      * @returns {undefined}
      */
-    ns.test = function (_id) {
-        var tmp = new ns.RBFNNet(
-                [new ns.RBFNeuron([-100, -100], 1)
-                            , new ns.RBFNeuron([100, 100], 10)]
+    js_rbfnn.test = function (_id) {
+        var tmp = new js_rbfnn.RBFNNet(
+                [new js_rbfnn.RBFNeuron([-100, -100], 1)
+                            , new js_rbfnn.RBFNeuron([100, 100], 10)]
                 , [10, 20]
                 , 100);
         _id = document.getElementById(_id);
@@ -140,7 +140,7 @@ try {
                 + "     , -700 is " + tmp.apply([100, 100]);
         tmp.setFitness(jsEOUtils.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]));
         msg += "\n"
-                + "Fitness is " + tmp.getFitness();
+                + "Error is " + tmp.getFitness();
         if (_id) {
             _id.innerHTML += "<p>" + msg + "</p>\n";
         } else {
@@ -158,12 +158,25 @@ try {
                 + "     , -700 is " + tmp.apply([100, 100]);
         tmp.setFitness(jsEOUtils.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]));
         msg += "\n"
-                + "Fitness is " + tmp.getFitness();
+                + "Error is " + tmp.getFitness();
         if (_id) {
             _id.innerHTML += "<p>" + msg + "</p>\n";
         } else {
             console.log(msg + "\n");
         }
+
+
+        console.log("\n\nTesting copy...\n\n");
+        tmp2 = tmp.copy();
+        console.log("Before changing...");
+        console.log("Original is ", tmp.neurons[0].center[0]);
+        console.log("Copy is ", tmp2.neurons[0].center[0]);
+        tmp2.neurons[0].center[0] = 9876;
+        console.log("After changing tmp2.neurons[0].center[0] to 9876...");
+        console.log("Original is ", tmp.neurons[0].center[0]);
+        console.log("Copy is ", tmp2.neurons[0].center[0]);
+
+
     };
 } catch (e) {
     console.log(e.message);
