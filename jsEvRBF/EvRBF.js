@@ -247,10 +247,11 @@ try {
                         console.log("Net ", i, " fitness ", e.getFitness());
                     });
 
+
+            this.indivSelector = new jsEOOpSelectorTournament(this.tournamentSize,
+                    Math.floor(this.popSize * this.replaceRate));
+            this.operSelector = new jsEOOperatorsWheel();
             /*
-             this.indivSelector = new jsEOOpSelectorTournament(this.tournamentSize,
-             Math.floor(this.popSize * this.replaceRate));
-             this.operSelector = new jsEOOperatorsWheel();
              this.operSelector.
              addOperator(new jsEOFVOpCrossOver(this.xOverRate));
              this.operSelector.
@@ -284,7 +285,7 @@ try {
         toRet = valSamples.reduce(function (init, e) {
             return init + jsEOUtils.distance(net.apply(e.input), e.output);
         }, init);
-        return (toRet!=0.0)?1/toRet:1e10;
+        return (toRet != 0.0) ? 1 / toRet : 1e10;
     }
 
     /**
