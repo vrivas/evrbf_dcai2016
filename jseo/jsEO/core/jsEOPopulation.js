@@ -106,7 +106,7 @@ var jsEOPopulation = new Class({
      */
     , evaluate: function (_aFunction, _params) {
         this.pop.forEach(function (e) {
-            e.evaluate(_aFunction( e, _params));
+            e.setFitness(_aFunction( e, _params));
         });
         return this;
     }

@@ -188,13 +188,13 @@ try {
                         });
                 var centers = [];
                 var radii = 1.0;
-                for (var i = 0; i < nNeurons; ++i) {
+                for (var j = 0; j < nNeurons; ++j) {
                     var pos = jsEOUtils.intRandom(0, tmpAleat.length - 1);
                     centers.push(this.trnSamples[tmpAleat[pos]].input);
                     tmpAleat[pos] = tmpAleat[tmpAleat.length - 1];
                     tmpAleat.pop();
-                    if (i > 0) {
-                        radii = Math.max(radii, jsEOUtils.distance(centers[i - 1], centers[i]));
+                    if (j > 0) {
+                        radii = Math.max(radii, jsEOUtils.distance(centers[j - 1], centers[j]));
                     }
                 }
 
@@ -213,19 +213,17 @@ try {
                 this.doConfigure();
                 return;
             }
-            
-            
+
+
             // Creating the patterns needed by the algorithm
             console.log("Creating patterns,  splitting TRN/VAL ");
             this.splitTrnVal();
-
-            console.log("Creating population ");
 
             this.population = new jsEOPopulation();
             this.createIndividuals();
 
             console.log("Training population ");
-            var tmpthis=this;
+            var tmpthis = this;
             this.population.getPopulation().
                     forEach(function (e) {
                         e.trainLMS(
@@ -242,42 +240,35 @@ try {
             console.log("Evaluating population ");
             this.population.evaluate(_fitFn, this.valSamples);
 
-            console.log("La población tiene ", this.population.getPopulation().length );
-
-            this.population.getPopulation().
-                    forEach(function (e, i) {
-                        console.log( "Net ", i, " fitness ", e.getFitness());
-                    });
-            
             console.log("Sorting population ");
             this.population.sort();
-             this.population.getPopulation().
+            this.population.getPopulation().
                     forEach(function (e, i) {
-                        console.log( "Net ", i, " fitness ", e.getFitness());
+                        console.log("Net ", i, " fitness ", e.getFitness());
                     });
 
             /*
-            this.indivSelector = new jsEOOpSelectorTournament(this.tournamentSize,
-                    Math.floor(this.popSize * this.replaceRate));
-            this.operSelector = new jsEOOperatorsWheel();
-            this.operSelector.
-                    addOperator(new jsEOFVOpCrossOver(this.xOverRate));
-            this.operSelector.
-                    addOperator(new jsEOFVOpMutation(this.mutRate,
-                            this.mutPower,
-                            this.minValue,
-                            this.maxValue));
-            if (this.opGet) {
-                this.operSelector.addOperator(this.opGet);
-            }
-
-            jsEOUtils.showPop(this.population, "Initial population", this.showing);
-            jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
-            this.privateRun(_fitFn, this.numGenerations, this.showing);
-            jsEOUtils.showPop(this.population, "Final population", this.showing);
-            jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
-            //jsEOUtils.drawStats();
-            */
+             this.indivSelector = new jsEOOpSelectorTournament(this.tournamentSize,
+             Math.floor(this.popSize * this.replaceRate));
+             this.operSelector = new jsEOOperatorsWheel();
+             this.operSelector.
+             addOperator(new jsEOFVOpCrossOver(this.xOverRate));
+             this.operSelector.
+             addOperator(new jsEOFVOpMutation(this.mutRate,
+             this.mutPower,
+             this.minValue,
+             this.maxValue));
+             if (this.opGet) {
+             this.operSelector.addOperator(this.opGet);
+             }
+             
+             jsEOUtils.showPop(this.population, "Initial population", this.showing);
+             jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
+             this.privateRun(_fitFn, this.numGenerations, this.showing);
+             jsEOUtils.showPop(this.population, "Final population", this.showing);
+             jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
+             //jsEOUtils.drawStats();
+             */
         }
 
     });
@@ -289,18 +280,11 @@ try {
      * @returns {Real data} Used as fitness for the net
      */
     ns.fitnessFunction = function (net, valSamples) {
-        var toRet = 0;
-        toRet = valSamples.reduce(function (toRet, e) {
-            tr = net.apply(valSamples.inputs);
-            console.log("toret vale ", toRet);
-            console.log("el valor devuelto por la red es ", tr);
-            console.log("la salida esperada es ", valSamples.output);
-            d = jsEOUtils.distance(tr, valSamples.output);
-            console.log("la distancia es  ", d);
-            return toRet + d; //jsEOUtils.distance(net.apply(valSamples.inputs), valSamples.output);
-        });
-        console.log("El valor final de toRet es", toRet);
-        return toRet;
+        var init = 0;
+        toRet = valSamples.reduce(function (init, e) {
+            return init + jsEOUtils.distance(net.apply(e.input), e.output);
+        }, init);
+        return (toRet!=0.0)?1/toRet:1e10;
     }
 
     /**

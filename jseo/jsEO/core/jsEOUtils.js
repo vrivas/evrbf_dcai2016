@@ -328,10 +328,20 @@ var jsEOUtils = {
      * @returns {Number} The euclidean distance
      */
     , distance: function (a, b) {
+        if (typeof a === 'undefined')
+            throw new TypeError("Distance can't be computed: "
+                    + "first parameter doen't exist ");
+        if (typeof b === 'undefined')
+            throw new TypeError("Distance can't be computed: "
+                    + "second parameter doen't exist ");
         if (a.length != b.length)
             throw new RangeError("Distance can't be computed: "
                     + "points have different lengths; "
                     + a.length + " vs " + b.length);
+
+        // Turning parameters into array to apply .map
+        a = (a.length) ? a : [a];
+        b = (b.length) ? b : [b];
         return Math.sqrt(
                 a.map(function (e, i) {
                     return e - b[i];
