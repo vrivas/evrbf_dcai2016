@@ -1,6 +1,6 @@
 /**
- * @file jsRBFNN/namespace.js
- * @brief Namespace and common functions for RBFNNets
+ * @file jsRBFNN/RBFNNet.js
+ * @brief Definition of RBFNNet class
  * @date 24/sep/2015, 12:00
  * @author Victor M. Rivas Santos vrivas@ujaen.es
  *         Geneura Team (http://geneura.wordpress.com)
