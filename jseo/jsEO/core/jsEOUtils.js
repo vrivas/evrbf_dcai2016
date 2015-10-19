@@ -21,6 +21,8 @@
 
 
 
+/* global google */
+
 var jsEOUtils = {
     verbose: false
     , bestFit: []
@@ -28,10 +30,12 @@ var jsEOUtils = {
     , averageFit: []
     , idOutput: "jsEOConsole"
     , idGraphics: "jsEOGraphics"
+    , idChart: "myChart"
     , problemID: null
     , getURL: "http://jseo.vrivas.es/php/sending.php"
     , sendURL: "http://jseo.vrivas.es/php/receiving.php"
     , proxyURL: "http://jseo.vrivas.es/php/proxy.php"
+    , showing: 3
     , setOutput: function (_id) {
         if (typeof _id != 'undefined') {
             this.idOutput = _id;
@@ -134,6 +138,13 @@ var jsEOUtils = {
     , getProxyURL: function () {
         return this.proxyURL;
     }
+    , setShowing: function (_val) {
+        this.showing = (_val >= 0) ? _val : this.showing;
+        return this;
+    }
+    , getShowing: function () {
+        return this.showing;
+    }
     , showPop: function (_aPop, _message, _numIndiv) {
         if (typeof _message != 'undefined' && _message) {
             jsEOUtils.print("<h2>" + _message + "</h2>");
@@ -143,7 +154,8 @@ var jsEOUtils = {
         }
 
         // Fixing the value of _numIndiv in case of problems
-        _numIndiv = (typeof _numIndiv == 'undefined' || _numIndiv < 0 || _numIndiv > _aPop.length()) ? _aPop.length() : _numIndiv;
+        _numIndiv = (typeof _numIndiv == 'undefined') ? this.showing : _numIndiv;
+        _numIndiv = (_numIndiv < 0 || _numIndiv > _aPop.length()) ? _aPop.length() : _numIndiv;
 
         var tb = "";
         tb += "<table class='tb_indiv' cols='3' border='0'>\n<tr>\n" +
@@ -152,14 +164,11 @@ var jsEOUtils = {
                 "<th class='fit'>Fitness</th>\n " +
                 "</tr>\n ";
         for (var i = 0; i < _numIndiv; ++i) {
-            var chr = _aPop.getAt(i).getChromosome();
-            if (Object.prototype.toString.call(chr) == '[object Array]') {
-                chr = chr.toString();
-            }
+            var chr = _aPop.getAt(i).getChromosome().toString();
             tb += "<tr>\n " +
                     "<td class='nInd'>" + i + "</td>\n" +
                     "<td class='chr'><span title='" + chr + "'>" +
-                    ((chr.length <= 50) ? chr : (chr.substr(0, 50) + "...")) + "</span></td>\n" +
+                    ((chr.length <= 50) ? chr : (chr.substr(0) + "...")) + "</span></td>\n" +
                     "<td class='chr'>" + _aPop.getAt(i).getFitness() + "</td>\n" +
                     "</tr>\n ";
 
@@ -263,7 +272,7 @@ var jsEOUtils = {
         return this;
     }
     , drawAverageFitness: function (_id) {
-        if (typeof _id == 'undefined' || !_id) {
+        if (typeof _id === 'undefined' || !_id) {
             _id = this.idGraphics;
         }
         google.load("visualization", "1", {packages: ["corechart"]});
@@ -283,8 +292,34 @@ var jsEOUtils = {
         });
         return this;
     }
+    , drawAverageFitness2: function (_id) {
+        if (typeof _id === 'undefined' || !_id) {
+            _id = this.idChart;
+        }
+        var ctx = document.getElementById(_id).getContext("2d");
+        var data = {
+            labels: jsEOUtils.averageFit.map(function (e, i) {
+                return i;
+            }),
+            datasets: [
+                {
+                    label: "Average Fitness",
+                    fillColor: "rgba(220,220,220,0.2)",
+                    strokeColor: "rgba(220,220,220,1)",
+                    pointColor: "rgba(220,220,220,1)",
+                    pointStrokeColor: "#fff",
+                    pointHighlightFill: "#fff",
+                    pointHighlightStroke: "rgba(220,220,220,1)",
+                    data: jsEOUtils.averageFit
+                }
+            ]
+        };
+        var myLineChart = new Chart(ctx).Line(data);
+        return this;
+    }
+
     , drawStats: function (_message, _id) {
-        if (typeof _id == 'undefined' || !_id) {
+        if (typeof _id === 'undefined' || !_id) {
             _id = this.idGraphics;
         }
         this.h2(_message, _id);

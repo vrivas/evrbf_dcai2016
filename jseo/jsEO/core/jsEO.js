@@ -37,10 +37,6 @@ var jsEO = new Class({
         this.fitness=_fitness;
         return this;
     }
-    , evaluate: function( _value ) {
-        this.fitness=_value ;
-        return this;
-    }
     // Less than
     , lt: function( _eo ) {
         return this.fitness<_eo.fitness;

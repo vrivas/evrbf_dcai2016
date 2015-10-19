@@ -30,8 +30,6 @@ try {
         throw new ReferenceError("RBFNNet won't work since jsRBFNN/namespace.js was not loaded.");
     if (typeof js_rbfnn.RBFNeuron === "undefined")
         throw new ReferenceError("RBFNNet won't work since jsRBFNN/RBFNeuron.js was not loaded.");
-    if (typeof jsEO === "undefined")
-        throw new ReferenceError("RBFNNet won't work since jsEO was not loaded.");
     /**
      * RBFNN (for RBFNN) constructor. Produces a SINGLE OUTPUT
      * @param {array of RBFNeuron} _neurons The neurons of the hidden layer
@@ -41,10 +39,7 @@ try {
      */
 
     js_rbfnn.RBFNNet = new Class({
-        Extends: jsEOIndiviual // An RBFNNet is an EOIndividual
-        , initialize: function (_neurons, _weights, _bias) {
-            /// Initalize jsEO
-            this.parent();
+        initialize: function (_neurons, _weights, _bias) {
             /// Array storing the neurons of the hidden layer
             this.neurons = (typeof _neurons !== 'undefined') ? _neurons.slice() : [];
             /// Array storing the weights from every hidden neuron to the output; 1 by default
@@ -125,7 +120,7 @@ try {
          * Returns the number of neurons in the hidden layer
          * @return {Integer} The number of neurons in the hidden layer
          */
-        , size: function() {
+        , size: function () {
             return this.neurons.length;
         }
         /**
@@ -133,8 +128,23 @@ try {
          * @param {Integer} _pos POsition of the neuron to retrieve
          * @returns {RBFNeuron} Neuron located at position _pos, or null if that position does not exit.
          */
-        , neuronAt: function( _pos ) {
-            return (0<=_pos && _pos<this.neurons.length)?this.neurons[_pos]:null;
+        , neuronAt: function (_pos) {
+            return (0 <= _pos && _pos < this.neurons.length) ? this.neurons[_pos] : null;
+        }
+
+        /**
+         * Returns a string so that it can be printed out
+         * @returns {undefined}
+         */
+        , toString: function () {
+            return 'Neurons: '+this.neurons.length+'\n'
+                    + this.neurons.reduce(function (init, e) {
+                        return init
+                                + "   Center: " + e.center.map(function(e){return e.toFixed(3);}).toString() + "\n"
+                                + "   Radius: " + e.radius.toFixed(3) + "\n";
+                    }, '')
+                    + "Weights: " + this.weights.map(function(e){return e.toFixed(3);}).toString() + "\n"
+                    + "Bias: " + this.bias + "\n";
         }
 
     });
@@ -149,17 +159,18 @@ try {
                 , [10, 20]
                 , 100);
         _id = document.getElementById(_id);
+
         var msg = "";
         msg = "Before training: \n"
                 + "     700 is " + tmp.apply([-100, -100]) + "\n"
                 + "     , -700 is " + tmp.apply([100, 100]);
-        tmp.setFitness(jsEOUtils.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]));
+        error = jsEOUtils.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]);
         msg += "\n"
-                + "Error is " + tmp.getFitness();
+                + "Error is " + error;
         if (_id) {
-            _id.innerHTML += "<p>" + msg + "</p>\n";
+            _id.innerHTML += "<p>".tmp.toString() + "</p><p>" + msg + "</p>\n";
         } else {
-            console.log(msg + "\n");
+            console.log(tmp.toString() + "\n" + msg + "\n");
         }
         tmp.trainLMS([
             [-100, -100], [100, 100] // Inputs
@@ -171,9 +182,9 @@ try {
         msg = "After training: \n"
                 + "     700 is " + tmp.apply([-100, -100]) + "\n"
                 + "     , -700 is " + tmp.apply([100, 100]);
-        tmp.setFitness(jsEOUtils.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]));
+        error = jsEOUtils.distance([700, -700], [tmp.apply([-100, -100]), tmp.apply([100, 100])]);
         msg += "\n"
-                + "Error is " + tmp.getFitness();
+                + "Error is " + error;
         if (_id) {
             _id.innerHTML += "<p>" + msg + "</p>\n";
         } else {
