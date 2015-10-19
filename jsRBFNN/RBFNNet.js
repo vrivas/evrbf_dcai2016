@@ -41,7 +41,7 @@ try {
      */
 
     js_rbfnn.RBFNNet = new Class({
-        Extends: jsEO // An RBFNNet is an EO
+        Extends: jsEOIndiviual // An RBFNNet is an EOIndividual
         , initialize: function (_neurons, _weights, _bias) {
             /// Initalize jsEO
             this.parent();
@@ -120,6 +120,21 @@ try {
                     rndInputs[pos] = rndInputs[j - 1];
                 }
             } // i for iterations
+        }
+        /**
+         * Returns the number of neurons in the hidden layer
+         * @return {Integer} The number of neurons in the hidden layer
+         */
+        , size: function() {
+            return this.neurons.length;
+        }
+        /**
+         * Returns the neuron located at position _pos
+         * @param {Integer} _pos POsition of the neuron to retrieve
+         * @returns {RBFNeuron} Neuron located at position _pos, or null if that position does not exit.
+         */
+        , neuronAt: function( _pos ) {
+            return (0<=_pos && _pos<this.neurons.length)?this.neurons[_pos]:null;
         }
 
     });

@@ -27,7 +27,7 @@ var jsEOIndividual = new Class({
     , initialize: function (_chromosome) {
         this.parent();
         this.chromosome = _chromosome || null;
-        jsEOUtils.debug("Inicializado un jsEOIndividual con chromosome " + this.chromosome +
+        jsEOUtils.debug("Initialising a jsEOIndividual with chromosome " + this.chromosome +
                 "<br/>");
 
     }

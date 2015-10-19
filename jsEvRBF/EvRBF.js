@@ -1,3 +1,5 @@
+/* global jsEOUtils, js_evrbf */
+
 /**
  * @file jsEVRBF/EvRBF.js
  * @brief Implementation of the EvRBF algorithm
@@ -28,15 +30,18 @@ try {
 
     if (typeof js_evrbf === "undefined")
         throw new ReferenceError("EvRBF won't work since jsEVRBF/EvRBF.js has not been loaded");
+    if (typeof js_evrbf.CenterMut === "undefined")
+        throw new ReferenceError("EvRBF won't work since jsEVRBF/operators.js has not been loaded");
     if (typeof js_rbfnn === "undefined")
         throw new ReferenceError("EvRBF won't work since jsRBFNN/RBFNN.js has not been loaded");
     if (typeof jsEOUtils === "undefined")
         throw new ReferenceError("EvRBF won't work since jsEO/core/jsEO.js has not been loaded");
     if (typeof jsEO === "undefined")
         throw new ReferenceError("EvRBF won't work since jsEO/core/jsEOUtils.js has not been loaded");
-    // Sortcut for EvRBF's namespace
-    ns = js_evrbf;
-    ns.jsEvRBF = new Class({
+
+
+
+    js_evrbf.jsEvRBF = new Class({
         Extends: jsEOGA // jsEvRBF is a Genetic Algorithm
         , data: [] // Needed to initialize centers, radii, and trn and validation samples
         , numNeurons: 0
@@ -92,7 +97,6 @@ try {
             this.trnValRate = _trnValRate || jsEOUtils.getInputParam("trnValRate", this.trnValRate);
             this.trainIterations = _trainIterations || jsEOUtils.getInputParam("trainIterations", this.trainIterations);
             this.trainAlfa = _trainAlfa || jsEOUtils.getInputParam("trainAlfa", this.trainAlfa);
-
             this.verbose = _verbose || jsEOUtils.getInputParam("verbose", this.verbose);
             this.configure = _configure || jsEOUtils.getInputParam("configure", this.configure);
             this.popSize = _popSize || parseInt(jsEOUtils.getInputParam("popSize", this.popSize));
@@ -251,25 +255,24 @@ try {
             this.indivSelector = new jsEOOpSelectorTournament(this.tournamentSize,
                     Math.floor(this.popSize * this.replaceRate));
             this.operSelector = new jsEOOperatorsWheel();
-            /*
-             this.operSelector.
-             addOperator(new jsEOFVOpCrossOver(this.xOverRate));
-             this.operSelector.
-             addOperator(new jsEOFVOpMutation(this.mutRate,
-             this.mutPower,
-             this.minValue,
-             this.maxValue));
-             if (this.opGet) {
-             this.operSelector.addOperator(this.opGet);
-             }
-             
-             jsEOUtils.showPop(this.population, "Initial population", this.showing);
-             jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
-             this.privateRun(_fitFn, this.numGenerations, this.showing);
-             jsEOUtils.showPop(this.population, "Final population", this.showing);
-             jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
-             //jsEOUtils.drawStats();
-             */
+
+            var minValue = Math.min.apply(null, this.data);
+            var maxValue = Math.max.apply(null, this.data);
+
+
+            this.operSelector.
+                    addOperator(new js_evrbf.CenterMut(this.mutRate, this.mutPower, minValue, maxValue));
+            if (this.opGet) {
+                this.operSelector.addOperator(this.opGet);
+            }
+
+            jsEOUtils.showPop(this.population, "Initial population", this.showing);
+            jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
+            this.privateRun(_fitFn, this.numGenerations, this.showing);
+            jsEOUtils.showPop(this.population, "Final population", this.showing);
+            jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
+            //jsEOUtils.drawStats();
+
         }
 
     });
@@ -280,7 +283,7 @@ try {
      * @param {Data Samples} valSamples The set of samples for the evaluation
      * @returns {Real data} Used as fitness for the net
      */
-    ns.fitnessFunction = function (net, valSamples) {
+    js_evrbf.fitnessFunction = function (net, valSamples) {
         var init = 0;
         toRet = valSamples.reduce(function (init, e) {
             return init + jsEOUtils.distance(net.apply(e.input), e.output);
@@ -292,14 +295,14 @@ try {
      * Function to test if EvRBF works properly
      * @returns {undefined}
      */
-    ns.test = function (_id) {
+    js_evrbf.test = function (_id) {
         console.log("Testing jsEvRBF...");
         var data = Array.apply(0, Array(20)).map(function (e, i) {
             return i * 10;
         })
         console.log(data);
-        var tmp = new ns.jsEvRBF(data, 2, 3);
-        tmp.run(ns.fitnessFunction);
+        var tmp = new js_evrbf.jsEvRBF(data, 2, 3);
+        tmp.run(js_evrbf.fitnessFunction);
         _id = document.getElementById(_id);
         var msg = "";
         if (_id) {

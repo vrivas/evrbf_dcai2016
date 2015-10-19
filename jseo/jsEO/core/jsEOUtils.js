@@ -142,9 +142,9 @@ var jsEOUtils = {
             return this;
         }
 
-        if (typeof _numIndiv == 'undefined' || _numIndiv < 0) {
-            _numIndiv = _aPop.length();
-        }
+        // Fixing the value of _numIndiv in case of problems
+        _numIndiv = (typeof _numIndiv == 'undefined' || _numIndiv < 0 || _numIndiv > _aPop.length()) ? _aPop.length() : _numIndiv;
+
         var tb = "";
         tb += "<table class='tb_indiv' cols='3' border='0'>\n<tr>\n" +
                 "<th class='nInd'>#Indiv</th>\n " +
@@ -311,13 +311,23 @@ var jsEOUtils = {
     }
 
     /**
-     * Creates a random number between min and max, both of them included
+     * Creates a random integer number between min and max, both of them included
      * @param {type} min Lowest value
      * @param {type} max Greatest value
-     * @returns {Number} Random number in the range [min,max]
+     * @returns {Number} Random integer number in the range [min,max]
      */
     , intRandom: function (min, max) {
         return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    /**
+     * Creates a random number between [min, max)
+     * @param {type} min Lowest value
+     * @param {type} max Greatest value
+     * @returns {Number} Random number in the range [min,max)
+     */
+    , random: function (min, max) {
+        return (Math.random() * (max - min)) + min;
     }
 
     /**

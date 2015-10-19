@@ -29,10 +29,21 @@ try {
             return Math.exp(-Math.pow(jsEOUtils.distance(this.center, _point), 2) / (2 * Math.pow(this.radius, 2)));
         }
 
+        /**
+         * Returns a copy of the neuron
+         * @returns {js_rbfnn.RBFNeuron} A copy of the neuron
+         */
         this.copy = function () {
             return new js_rbfnn.RBFNeuron(this.center, this.radius);
         }
 
+        /**
+         * Returns the size (length) of the center
+         * @returns {Integer} The length or size of the center.
+         */
+        this.size=function() {
+            return this.center.length;
+        }
         /**
          * Test function for RBFNeuron
          * @returns {undefined}

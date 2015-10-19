@@ -32,8 +32,7 @@ try {
         throw new ReferenceError("EvRBF won't work since jsEVRBF/EvRBF.js has not been loaded");
     if (typeof jsEOOperator === "undefined")
         throw new ReferenceError("EvRBF won't work since jsEO/core/jsEOperator.js has not been loaded");
-    // Sortcut for EvRBF's namespace
-    ns = js_evrbf;
+
     /*
      js_evrbf.jsXOver = new Class({// ### Aün sin hacer
      Extends: jsEOOperator,
@@ -91,11 +90,13 @@ try {
      * Centers Mutator... transitory until re-reading the original paper
      * @type Class
      */
-    js_evrbf.jsCenterMut = new Class({// ### Aün sin hacer
+    js_evrbf.CenterMut = new Class({
         Extends: jsEOOperator,
-        initialize: function (_applicationRate, _centersRate) {
+        initialize: function (_applicationRate, _centersRate, _min, _max) {
             this.parent(_applicationRate);
-            this.centersRate = _centersRate;
+            this.centersRate = _centersRate || 0.5;
+            this.min = _min || 0;
+            this.max = _max || 1;
             jsEOUtils.debugln("Initializing a js_evrf.CenterMut with "
                     + "applicationRate " + this.applicationRate
                     + " and centersRate " + this.centersRate);
@@ -104,15 +105,23 @@ try {
         operate: function (_auxPop) {
             jsEOUtils.debugln("Applying js_evrf.CenterMut");
             var toRet = new jsEOPopulation();
-            var tmpChr = _auxPop.getAt(0).getChromosome();
-            var newChr = new Array();
-            jsEOUtils.debugln("  Individual is " + tmpChr);
-            for (var i = 0; i < tmpChr.length; ++i) {
-                newChr.push((Math.random() < this.genesRate) ? (Math.random() * (this.max - this.min) + this.min) : tmpChr[i]);
-            }
-            jsEOUtils.debugln("  Final  " + newChr);
-            toRet.add(new jsEOFVIndividual());
-            toRet.getAt(0).setChromosome(newChr);
+            var tmpChr = _auxPop.getAt(0).getChromosome().copy();
+            jsEOUtils.debugln("  Current individual is " + tmpChr);
+            var self = this;
+            
+            // Changing the values of the centers for those neurons selected according to this.centersRate
+            tmpChr.neurons
+                    .filter(function () {
+                        return Math.random <= this.centersRate;
+                    })
+                    .forEach(function (e) {
+                        e.center.forEach(function (e,i,v) {
+                            v[i] = jsEOUtils.random(self.min, self.max);
+                        })
+                    });
+
+            jsEOUtils.debugln("  Final individual is " + tmpChr);
+            toRet.add(tmpChr);
             return toRet;
         }
     });

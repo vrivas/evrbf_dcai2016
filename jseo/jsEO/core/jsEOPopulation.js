@@ -23,7 +23,7 @@
 var jsEOPopulation = new Class({
     pop: []
     , initialize: function ( ) {
-        jsEOUtils.debug("Inicializado un jsEOPopulation" +
+        jsEOUtils.debug("Initialising a jsEOPopulation" +
                 "<br/>");
     }
     , getPopulation: function () {
@@ -34,10 +34,10 @@ var jsEOPopulation = new Class({
         return this;
     }
     , getAt: function (_i, _j) {
-        if (typeof _i == 'undefined') {
+        if (typeof _i === 'undefined') {
             return null;
         }
-        if (typeof _j == 'undefined') {
+        if (typeof _j === 'undefined') {
             return this.pop[_i]; // Returns and individual
         }
         return this.pop.slice(_i, _j + 1); // Returns an array        
