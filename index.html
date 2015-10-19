@@ -13,6 +13,10 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         <script src="./zepto.min.js">// Including zepto to make AJAX calls</script>
+        <script src="./lib/mootools/mootools-core-full-compat.js"></script>
+        <script src="./lib/Chart.min.js"></script>
+
+        <script>a=new Chart();</Script>
         <!--<script data-main="./iconio.jsEO.Main" src="./require.js">// Including require library</script>-->
         <script src="./iconio.Date.js"></script>
         <script src="./iconio.EventTypes.js"></script>
@@ -22,7 +26,6 @@ and open the template in the editor.
 
 
         <!-- Including jsEO -->
-        <script src="./jseo/mootools/mootools-core-full-compat.js"></script>
 
         <script src="./jseo/jsEO/core/jsEOUtils.js"></script>
         <script src="./jseo/jsEO/core/jsEO.js"></script>
@@ -54,10 +57,12 @@ and open the template in the editor.
         <!-- Including jsEvRBF -->
         <script src="./jsEvRBF/namespace.js">//Loading namespace for js.EvRBF</script>
         <script src="./jsEvRBF/operators.js">//Loading operators for js.EvRBF</script>
+        <script src="./jsEvRBF/individual.js">//Loading operators for js.EvRBF</script>
         <script src="./jsEvRBF/EvRBF.js">//Loading the algorithm</script>
 
         <!-- Testing jsEvRBF -->
         <script src="./iconio.jsEvRBF.Main.js">// Testing jsEvRBF just load the page in a browser, and type "js_evrbf.test()" in the console's command line</script>
+
         <script>
             var now = null;
 
@@ -365,7 +370,12 @@ and open the template in the editor.
         <h1>ICONIO: Web browsers forecasting time-series</h1>
         <h2>Messages received from server</h2>
         <div id="msj"></div>
+        <div id="jsEOGraphics"></div>
+        <canvas id="myChart" width="1200" height="400"></canvas>
         <div id="jsEOForm"></div>
-        
+        <div id="jsEOConsole"></div>
+
+
+
         <script> init();</script>
 </html>

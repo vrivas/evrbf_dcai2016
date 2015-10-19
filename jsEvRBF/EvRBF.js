@@ -51,7 +51,7 @@ try {
         , trainAlfa: 0.3
         , verbose: false
         , configure: false
-        , popSize: 2
+        , popSize: 100
         , tournamentSize: 2
         , xOverRate: 0.8
         , mutRate: 0.2
@@ -59,7 +59,6 @@ try {
         , numGenerations: 100
         , replaceRate: 0.3
         , getIndividualsRate: 0.0 // Initially, no communication with server is needed
-        , showing: 3
         , trnSamples: []
         , valSamples: []
         , initialize: function (
@@ -107,7 +106,7 @@ try {
             this.numGenerations = _numGenerations || parseInt(jsEOUtils.getInputParam("numGenerations", this.numGenerations));
             this.replaceRate = _replaceRate || parseFloat(jsEOUtils.getInputParam("replaceRate", this.replaceRate));
             this.getIndividualsRate = _getIndividualsRate || jsEOUtils.getInputParam("getIndividualsRate", this.getIndividualsRate);
-            this.showing = _showing || parseInt(jsEOUtils.getInputParam("showing", this.showing));
+            jsEOUtils.setShowing(_showing || parseInt(jsEOUtils.getInputParam("showing", this.showing)));
             if (typeof _opGet != 'undefined') {
                 _opGet.setApplicationRate(this.getIndividualsRate);
             }
@@ -134,12 +133,7 @@ try {
                 } else {
                     this.valSamples.push(tmp);
                 }
-
             }
-
-            console.log("  Data: ", this.data);
-            console.log("  trnSamples: ", this.trnSamples);
-            console.log("  valSamples: ", this.valSamples);
         }
 
         // The doConfigure method has to be fixed!!!
@@ -202,12 +196,15 @@ try {
                     }
                 }
 
+                jsEOUtils.debugln(" - Starting the creation of individuals ");
                 //console.log("  Centers: ", centers);
                 this.population.addIndividual(
-                        new js_rbfnn.RBFNNet(
-                                centers.map(function (e) {
-                                    return new js_rbfnn.RBFNeuron(e, radii)
-                                }))
+                        new js_evrbf.individual(
+                                new js_rbfnn.RBFNNet(
+                                        centers.map(function (e) {
+                                            return new js_rbfnn.RBFNeuron(e, radii)
+                                        }))
+                                )
                         );
             }
         }
@@ -218,39 +215,32 @@ try {
                 return;
             }
 
-
+            jsEOUtils.setVerbose(0);
             // Creating the patterns needed by the algorithm
-            console.log("Creating patterns,  splitting TRN/VAL ");
+            jsEOUtils.debugln("Creating patterns,  splitting TRN/VAL ");
             this.splitTrnVal();
 
             this.population = new jsEOPopulation();
             this.createIndividuals();
 
-            console.log("Training population ");
-            var tmpthis = this;
+            var self = this;
             this.population.getPopulation().
                     forEach(function (e) {
-                        e.trainLMS(
-                                tmpthis.trnSamples.map(function (e) {
-                                    return e.input;
-                                }) // INputs
-                                , tmpthis.trnSamples.map(function (e) {
-                                    return e.output;
-                                })// Desired outputs
-                                , tmpthis.trainIterations // Iterations
-                                , tmpthis.trainAlfa); // Alfa
+                        e.chromosome
+                                .trainLMS(
+                                        self.trnSamples.map(function (e) {
+                                            return e.input;
+                                        }) // INputs
+                                        , self.trnSamples.map(function (e) {
+                                            return e.output;
+                                        })// Desired outputs
+                                        , self.trainIterations // Iterations
+                                        , self.trainAlfa); // Alfa
                     });
 
-            console.log("Evaluating population ");
-            this.population.evaluate(_fitFn, this.valSamples);
-
-            console.log("Sorting population ");
-            this.population.sort();
-            this.population.getPopulation().
-                    forEach(function (e, i) {
-                        console.log("Net ", i, " fitness ", e.getFitness());
-                    });
-
+            this.population
+                    .evaluate(_fitFn, {"valSamples": this.valSamples})
+                    .sort();
 
             this.indivSelector = new jsEOOpSelectorTournament(this.tournamentSize,
                     Math.floor(this.popSize * this.replaceRate));
@@ -260,16 +250,30 @@ try {
             var maxValue = Math.max.apply(null, this.data);
 
 
-            this.operSelector.
-                    addOperator(new js_evrbf.CenterMut(this.mutRate, this.mutPower, minValue, maxValue));
+            this.operSelector
+                    .addOperator(new js_evrbf.CenterMut(this.mutRate
+                            , this.mutPower
+                            , minValue
+                            , maxValue
+                            , this.trnSamples
+                            , this.trainIterations
+                            , this.trainAlfa))
+                    .addOperator(new js_evrbf.RadiusMut(this.mutRate
+                            , this.mutPower
+                            , minValue
+                            , maxValue
+                            , this.trnSamples
+                            , this.trainIterations
+                            , this.trainAlfa));
+
             if (this.opGet) {
                 this.operSelector.addOperator(this.opGet);
             }
 
-            jsEOUtils.showPop(this.population, "Initial population", this.showing);
+            jsEOUtils.showPop(this.population, "Initial population");
             jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
-            this.privateRun(_fitFn, this.numGenerations, this.showing);
-            jsEOUtils.showPop(this.population, "Final population", this.showing);
+            this.privateRun(_fitFn, {"valSamples": this.valSamples}, this.numGenerations);
+            jsEOUtils.showPop(this.population, "Final population");
             jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
             //jsEOUtils.drawStats();
 
@@ -280,12 +284,15 @@ try {
     /**
      * 
      * @param {jsRBFNN} net The net to evaluate
-     * @param {Data Samples} valSamples The set of samples for the evaluation
+     * @param {Object} Params The set of parameters needed to call the fitness function. Needs to include valSamples for the evaluation
      * @returns {Real data} Used as fitness for the net
      */
-    js_evrbf.fitnessFunction = function (net, valSamples) {
+    js_evrbf.fitnessFunction = function (net, params) {
+        if (typeof params.valSamples === 'undefined')
+            throw new ReferenceError("js_evrbf.fitnessFunction has been passed params WITHOUT valSamples");
+
         var init = 0;
-        toRet = valSamples.reduce(function (init, e) {
+        toRet = params.valSamples.reduce(function (init, e) {
             return init + jsEOUtils.distance(net.apply(e.input), e.output);
         }, init);
         return (toRet != 0.0) ? 1 / toRet : 1e10;
@@ -302,6 +309,9 @@ try {
         })
         console.log(data);
         var tmp = new js_evrbf.jsEvRBF(data, 2, 3);
+        tmp.popSize = 10;
+        tmp.replaceRate = 0.75;
+        tmp.numGenerations = 300;
         tmp.run(js_evrbf.fitnessFunction);
         _id = document.getElementById(_id);
         var msg = "";
@@ -310,6 +320,7 @@ try {
         } else {
             console.log(msg + "\n");
         }
+        jsEOUtils.drawAverageFitness2();
     };
 } catch (e) {
     console.log(e.message);
