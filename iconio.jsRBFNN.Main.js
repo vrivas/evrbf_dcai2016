@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+'use strict;'
 var logea = true;
 var iconio_jsRBFNN = {
     "centersRate": 0.5
@@ -23,23 +24,27 @@ var iconio_jsRBFNN = {
                 centers.push(sample.inputs);
             }
         }
-
         // Ensuring at least one center
         if (!centers.length) {
-            centers.push(samples[Math.floor(Math.random() * trn.length)]);
+            centers.push(samples[Math.floor(Math.random() * samples.length)].inputs);
         }
-
         // Computing average distance (for radius)
         var radius = (centers.reduce(function (prev, e, i) {
-            return (i == 0 ? 0 : prev + jsEOUtils.distance(centers[i - 1], e));
+            return (i == 0 ? 0 : (prev + jsEOUtils.distance(centers[i - 1], e)));
         }, 0)) / centers.length;
 
-
+        // Fixing radius in case it is 0
+        radius=(radius==0)?1:radius;
+        
         // Creating net
         var net = new js_rbfnn.RBFNNet(centers.map(function (e) {
-            return new js_rbfnn.RBFNeuron(e.inputs, radius);
+            return new js_rbfnn.RBFNeuron(e, radius);
         }));
-
+        
+        console.log( "Centers ", centers.length);
+        console.log( "Before training val is ", net.apply( samples[samples.length-2].inputs ), "vs ", samples[samples.length-2].output );
+        console.log( "Before training tst is ", net.apply( samples[samples.length-1].inputs ) , "vs ", samples[samples.length-1].output );
+        
         net.trainLMS(
                 samples.map(function (e) {
                     return e.inputs;
@@ -50,6 +55,7 @@ var iconio_jsRBFNN = {
                 , 30
                 , 0.3
                 );
+        
         if (logea) {
             console.log("net is: ");
             console.log(net);
@@ -57,15 +63,20 @@ var iconio_jsRBFNN = {
         }
         // Instatiating the object to return
         var toRet = new ForecastOutput();
+        
         // last number in DATA is realVal so it can not be used
         // Val: Forecasting for last known value
         toRet.SetVal(
-                data.length
+                net.apply( samples[samples.length-2].inputs )
                 );
         // Test: Forecasting for next ("Unknown") value
         toRet.SetTest(
-                data.length
+                net.apply( samples[samples.length-1].inputs )
                 );
+        
+                console.log( "After training val is ", net.apply( samples[samples.length-2].inputs ), "vs ", samples[samples.length-2].output );
+        console.log( "After training tst is ", net.apply( samples[samples.length-1].inputs ), "vs ", samples[samples.length-1].output );
+
         console.log("jsRBFNN running ");
         return toRet;
     }
