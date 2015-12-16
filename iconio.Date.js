@@ -67,10 +67,35 @@ Date.prototype.aaaammddhhmm = function () {
     toRet += tmp;
     return toRet;
 }
+/**
+ * Returns the date as a string with the format: AAAMMDDHHMMSS
+ * @returns {String}
+ */
+Date.prototype.aaaammddhhmmss = function () {
+    var toRet = "";
+    var tmp = this.getFullYear();
+    toRet += tmp;
+    tmp = this.getMonth() + 1;
+    tmp = ((tmp < 10) ? "0" : "") + tmp;
+    toRet += tmp;
+    tmp = this.getDate();
+    tmp = ((tmp < 10) ? "0" : "") + tmp;
+    toRet += tmp;
+    tmp = this.getHours();
+    tmp = ((tmp < 10) ? "0" : "") + tmp;
+    toRet += tmp;
+    tmp = this.getMinutes();
+    tmp = ((tmp < 10) ? "0" : "") + tmp;
+    toRet += tmp;
+    tmp = this.getSeconds();
+    tmp = ((tmp < 10) ? "0" : "") + tmp;
+    toRet += tmp;
+    return toRet;
+}
 
 
 /**
- * Returns the date as a string with the format: AAAMMDDHHMM
+ * Returns the date as a string with the format: DD/MM/AAAA, hh:mm:ss
  * @returns {String}
  */
 Date.prototype.log = function () {

@@ -8,12 +8,29 @@
  *  GeNeura Team (http://geneura.ugr.es)
  */
 
+/**
+ * Constructor of the class
+ * @returns {ClientInfo}
+ */
 function ClientInfo() {
-    var id = null;
+    this.id = null;
+    this.info = null;
+}
+ClientInfo.prototype.randomClientId = function (_p) {
+    var letters = "ABCDEFGHIJLKMNOPQRSTUVWXYZabcdefghijklmnrstuvwxyz0987654321";
+    var tmp = (new Date()).aaaammddhhmmss() + "-";
+    for (var i = tmp.length; i > 0; --i) { // 
+        tmp += letters[jsEOUtils.intRandom(0, letters.length - 1)];
+    }
+    return tmp;
 }
 
 ClientInfo.prototype.SetId = function (_p) {
-    id = _p;
+    this.id = _p || this.randomClientId();
+    this.info = {
+        "userAgent": navigator.userAgent
+        , "timestamp": (new Date()).aaaammddhhmmss()
+    }
     // Enviar info de Navigator
     // $$$
     w("Setting id...");
@@ -21,8 +38,8 @@ ClientInfo.prototype.SetId = function (_p) {
         type: 'POST'
         , url: '/clientInformation'
         , data: {
-            clientID: id,
-            userAgent: navigator.userAgent
+            "clientID": this.id
+            , "info": this.info
         }
         , dataType: 'json'
         , success: function (data) {
@@ -32,11 +49,15 @@ ClientInfo.prototype.SetId = function (_p) {
             console.log(w("ERROR: Information about client couldn't be sent to server..."));
         }
     });
-    return id;
+    return this.id;
 };
 
 ClientInfo.prototype.GetId = function () {
-    return id;
+    return this.id;
+}
+
+ClientInfo.prototype.GetInfo = function () {
+    return this.info;
 }
 
 

@@ -102,13 +102,17 @@ try {
             this.trnSamples = _trnSamples || [];
             this.trainIterations = _trainIterations || 1;
             this.trainAlfa = _trainAlfa || 0;
-            jsEOUtils.debugln("Initializing a js_evrf.CenterMut with "
-                    + "applicationRate " + this.applicationRate
-                    + " and centersRate " + this.centersRate);
+            jsEOUtils.debugln("Initializing a js_evrf.CenterMut with"
+                    + " applicationRate " + this.applicationRate
+                    + " and centersRate " + this.centersRate
+                    + " values between " + _min + " and " + _max
+                    );
 
         },
         operate: function (_auxPop) {
             jsEOUtils.debugln("Applying js_evrf.CenterMut");
+            //console.log("Applying js_evrf.CenterMut with values" + this.min + " and " + this.max);
+
             var tmpChr = _auxPop.getAt(0).getChromosome().copy();
             var self = this;
 
@@ -151,22 +155,26 @@ try {
             this.trnSamples = _trnSamples || [];
             this.trainIterations = _trainIterations || 1;
             this.trainAlfa = _trainAlfa || 0;
-            jsEOUtils.debugln("Initializing a js_evrf.RadiusMut with "
-                    + "applicationRate " + this.applicationRate);
+            jsEOUtils.debugln("Initializing a js_evrf.RadiusMut with"
+                    + " applicationRate " + this.applicationRate
+                    + " values between " + _min + " and " + _max);
 
         },
         operate: function (_auxPop) {
-            jsEOUtils.debugln("Applying js_evrf.RadiusMut");
+            jsEOUtils.debugln("Applying js_evrf.RadiusMut with values" + this.min + " and " + this.max);
+            //console.log("Applying js_evrf.RadiusMut with values" + this.min + " and " + this.max);
             var tmpChr = _auxPop.getAt(0).getChromosome().copy();
             var self = this;
 
-            // Changing the values of the centers for those neurons selected according to this.radiusRate
+            // Changing the values of the radius for those neurons selected according to this.radiusRate
             tmpChr.neurons
                     .filter(function () {
                         return Math.random() <= self.radiusRate;
                     })
-                    .forEach(function (e) {
+                    .forEach(function (e, i) {
+                        var tmp=e.radius;
                         e.radius = jsEOUtils.random(self.min, self.max);
+                        //console.log( "Radius changes from ", tmp, " to ", e.radius );
                     });
 
             tmpChr.trainLMS(

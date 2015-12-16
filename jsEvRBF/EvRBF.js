@@ -44,6 +44,8 @@ try {
     js_evrbf.jsEvRBF = new Class({
         Extends: jsEOGA // jsEvRBF is a Genetic Algorithm
         , data: [] // Needed to initialize centers, radii, and trn and validation samples
+        , trnSamples: []
+        , valSamples: []
         , numNeurons: 0
         , inputDimension: 0
         , trnValRate: 0.75  // % per training
@@ -59,10 +61,13 @@ try {
         , numGenerations: 100
         , replaceRate: 0.3
         , getIndividualsRate: 0.0 // Initially, no communication with server is needed
-        , trnSamples: []
-        , valSamples: []
-        , initialize: function (
+
+        , initialize: function ( params
+                // Possible params
+                /*
                 _data
+                , _trnSamples
+                , _valSamples
                 , _numNeurons
                 , _inputDimension
                 , _trnValRate
@@ -80,37 +85,42 @@ try {
                 , _numGenerations
                 , _replaceRate
                 , _getIndividualsRate
-                , _showing) {
-            if (_data.length <= 0)
-                throw new RangeError("Data sent to jsEvRBF has size 0... no neurons and nets could be created");
-            if (_numNeurons < 1)
+                , _showing
+                  */      
+                ) {
+            if (!params.numNeurons || params.numNeurons < 1)
                 throw new RangeError("The number of (hidden) neurons is smaller than 1, jsEvRBF can't create nets...");
-            if (_inputDimension < 1)
+            if (!params.inputDimension || params.inputDimension < 1)
                 throw new RangeError("The dimension of the input is smaller than 1, jsEvRBF can't create inputs...");
-            if (_inputDimension >= _data.length)
+            if (params.data && params.data.length > 0 && params.inputDimension >= params.data.length)
                 throw new RangeError("The dimension of the input is greater or equal than data length, jsEvRBF can't create inputs...");
+            if (params.trnSamples.length > 0 && params.inputDimension != params.trnSamples[0].input.length)
+                throw new RangeError("A set of samples for training has been provided, but the value for inputDimension doesn't fit the length of input patterns");
+
             // Reading parameters
-            this.data = _data;
-            this.numNeurons = _numNeurons;
-            this.inputDimension = _inputDimension;
-            this.trnValRate = _trnValRate || jsEOUtils.getInputParam("trnValRate", this.trnValRate);
-            this.trainIterations = _trainIterations || jsEOUtils.getInputParam("trainIterations", this.trainIterations);
-            this.trainAlfa = _trainAlfa || jsEOUtils.getInputParam("trainAlfa", this.trainAlfa);
-            this.verbose = _verbose || jsEOUtils.getInputParam("verbose", this.verbose);
-            this.configure = _configure || jsEOUtils.getInputParam("configure", this.configure);
-            this.popSize = _popSize || parseInt(jsEOUtils.getInputParam("popSize", this.popSize));
-            this.tournamentSize = _tournamentSize || parseInt(jsEOUtils.getInputParam("tournamentSize", this.tournamentSize));
-            this.xOverRate = _xOverRate || parseFloat(jsEOUtils.getInputParam("xOverRate", this.xOverRate));
-            this.mutRate = _mutRate || parseFloat(jsEOUtils.getInputParam("mutRate", this.mutRate));
-            this.mutPower = _mutPower || parseFloat(jsEOUtils.getInputParam("mutPower", this.mutPower));
-            this.numGenerations = _numGenerations || parseInt(jsEOUtils.getInputParam("numGenerations", this.numGenerations));
-            this.replaceRate = _replaceRate || parseFloat(jsEOUtils.getInputParam("replaceRate", this.replaceRate));
-            this.getIndividualsRate = _getIndividualsRate || jsEOUtils.getInputParam("getIndividualsRate", this.getIndividualsRate);
-            jsEOUtils.setShowing(_showing || parseInt(jsEOUtils.getInputParam("showing", this.showing)));
-            if (typeof _opGet != 'undefined') {
-                _opGet.setApplicationRate(this.getIndividualsRate);
+            this.data = params.data || [];
+            this.trnSamples = params.trnSamples || [];
+            this.valSamples = params.valSamples || [];
+            this.numNeurons = params.numNeurons;
+            this.inputDimension = params.inputDimension;
+            this.trnValRate = params.trnValRate || jsEOUtils.getInputParam("trnValRate", this.trnValRate);
+            this.trainIterations = params.trainIterations || jsEOUtils.getInputParam("trainIterations", this.trainIterations);
+            this.trainAlfa = params.trainAlfa || jsEOUtils.getInputParam("trainAlfa", this.trainAlfa);
+            this.verbose = params.verbose || jsEOUtils.getInputParam("verbose", this.verbose);
+            this.configure = params.configure || jsEOUtils.getInputParam("configure", this.configure);
+            this.popSize = params.popSize || parseInt(jsEOUtils.getInputParam("popSize", this.popSize));
+            this.tournamentSize = params.tournamentSize || parseInt(jsEOUtils.getInputParam("tournamentSize", this.tournamentSize));
+            this.xOverRate = params.xOverRate || parseFloat(jsEOUtils.getInputParam("xOverRate", this.xOverRate));
+            this.mutRate = params.mutRate || parseFloat(jsEOUtils.getInputParam("mutRate", this.mutRate));
+            this.mutPower = params.mutPower || parseFloat(jsEOUtils.getInputParam("mutPower", this.mutPower));
+            this.numGenerations = params.numGenerations || parseInt(jsEOUtils.getInputParam("numGenerations", this.numGenerations));
+            this.replaceRate = params.replaceRate || parseFloat(jsEOUtils.getInputParam("replaceRate", this.replaceRate));
+            this.getIndividualsRate = params.getIndividualsRate || jsEOUtils.getInputParam("getIndividualsRate", this.getIndividualsRate);
+            jsEOUtils.setShowing(params.showing || parseInt(jsEOUtils.getInputParam("showing", this.showing)));
+            if (typeof params.opGet != 'undefined') {
+                params.opGet.setApplicationRate(this.getIndividualsRate);
             }
-            this.parent(_opSend, _opGet);
+            this.parent(params.opSend, params.opGet);
 
             jsEOUtils.debugln("Initializing the jsEvRBF object... ");
         }
@@ -176,11 +186,17 @@ try {
                     .setOutput("jsEOConsole");
         }
         , createIndividuals: function () {
+            if (this.trnSamples.length <= 0)
+                throw new RangeError("EvRBF.js: createIndividuals: "
+                        + "No neurons and nets could be created since trnSamples.length is " + this.trnSamples.length);
+            if (this.popSize <= 0)
+                throw new RangeError("EvRBF.js: createIndividuals: "
+                        + "No neurons and nets could be created since popSize is " + this.popSize);
             for (var i = 0; i < this.popSize; ++i) {
-                var nNeurons = jsEOUtils.intRandom(1, Math.max(this.numNeurons, this.trnSamples.length));
+                var nNeurons = jsEOUtils.intRandom(1, Math.max(1, Math.min(this.numNeurons, this.trnSamples.length)));
                 // Selecting random different samples from training to act as centers
                 var tmpAleat = Array
-                        .apply(0, Array(nNeurons))
+                        .apply(0, Array(this.trnSamples.length))
                         .map(function (e, i) {
                             return i;
                         });
@@ -215,13 +231,16 @@ try {
                 return;
             }
 
-            jsEOUtils.setVerbose(0);
-            // Creating the patterns needed by the algorithm
-            jsEOUtils.debugln("Creating patterns,  splitting TRN/VAL ");
-            this.splitTrnVal();
+            if (this.data.length > 0 && (this.trnSamples.length<=0 || this.valSamples.length<=0)) {
+                // Creating the patterns needed by the algorithm only if data is provide
+                // in other case, use trnSamples and valSamples
+                jsEOUtils.debugln("Creating patterns,  splitting TRN/VAL ");
+                this.splitTrnVal();
+            }
 
             this.population = new jsEOPopulation();
             this.createIndividuals();
+            jsEOUtils.debugln("Adding a population of ", this.getPopulation().length, " indiviuals");
 
             var self = this;
             this.population.getPopulation().
