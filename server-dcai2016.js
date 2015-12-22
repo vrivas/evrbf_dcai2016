@@ -10,9 +10,7 @@
 // Including libraries
 var fs = require('fs');
 eval(fs.readFileSync('./config.js') + '');
-eval(fs.readFileSync('./iconio.Date.js') + '');
-eval(fs.readFileSync('./iconio.EventTypes.js') + '');
-eval(fs.readFileSync('./iconio.Model.js') + '');
+//eval(fs.readFileSync('./iconio.Date.js') + '');
 eval(fs.readFileSync('./dcai2016/dcai2016.Persistence.js') + '');
 //eval(fs.readFileSync('iconio.Experiment.js') + '');
 
