@@ -34,7 +34,6 @@ try {
         throw new ReferenceError("EvRBF won't work since jsEVRBF/EvRBF.js has not been loaded");
     if (typeof jsEOOperator === "undefined")
         throw new ReferenceError("EvRBF won't work since jsEO/core/jsEOperator.js has not been loaded");
-
     /*
      js_evrbf.jsXOver = new Class({// ### Aün sin hacer
      Extends: jsEOOperator,
@@ -107,7 +106,6 @@ try {
                     + " and centersRate " + this.centersRate
                     + " values between " + _min + " and " + _max
                     );
-
         },
         operate: function (_auxPop) {
             jsEOUtils.debugln("Applying js_evrf.CenterMut");
@@ -115,7 +113,6 @@ try {
 
             var tmpChr = _auxPop.getAt(0).getChromosome().copy();
             var self = this;
-
             // Changing the values of the centers for those neurons selected according to this.centersRate
             tmpChr.neurons
                     .filter(function () {
@@ -126,7 +123,6 @@ try {
                             v[i] = jsEOUtils.random(self.min, self.max);
                         });
                     });
-
             tmpChr.trainLMS(
                     this.trnSamples.map(function (e) {
                         return e.input;
@@ -140,7 +136,6 @@ try {
                     .add(new js_evrbf.individual(tmpChr));
         }
     });
-
     /**
      * RADIUS Mutator... transitory until re-reading the original paper
      * @type Class
@@ -158,25 +153,22 @@ try {
             jsEOUtils.debugln("Initializing a js_evrf.RadiusMut with"
                     + " applicationRate " + this.applicationRate
                     + " values between " + _min + " and " + _max);
-
         },
         operate: function (_auxPop) {
             jsEOUtils.debugln("Applying js_evrf.RadiusMut with values" + this.min + " and " + this.max);
             //console.log("Applying js_evrf.RadiusMut with values" + this.min + " and " + this.max);
             var tmpChr = _auxPop.getAt(0).getChromosome().copy();
             var self = this;
-
             // Changing the values of the radius for those neurons selected according to this.radiusRate
             tmpChr.neurons
                     .filter(function () {
                         return Math.random() <= self.radiusRate;
                     })
                     .forEach(function (e, i) {
-                        var tmp=e.radius;
+                        var tmp = e.radius;
                         e.radius = jsEOUtils.random(self.min, self.max);
                         //console.log( "Radius changes from ", tmp, " to ", e.radius );
                     });
-
             tmpChr.trainLMS(
                     this.trnSamples.map(function (e) {
                         return e.input;
@@ -190,6 +182,66 @@ try {
                     .add(new js_evrbf.individual(tmpChr));
         }
     });
+
+    /**
+     * Sending information
+     * @type Class
+     */
+    js_evrbf.opSendInfo = new Class({
+        Extends: jsEOOpSendIndividuals,
+        operate: function (_auxPop) {
+            var data2bSend = "data=" + jsEOUtils.getProblemId() + ",";
+            var tmpCad = "";
+            for (var i = 0; i < this.numIndividuals; ++i) {
+                if (i > 0) {
+                    tmpCad += ",";
+                }
+                var tmpChr = _auxPop.getAt(i).getChromosome();
+                if (Object.prototype.toString.call(tmpChr) === '[object Array]') {
+                    for (var j = 0; j < tmpChr.length; ++j) {
+                        if (j > 0) {
+                            tmpCad += ",";
+                        }
+                        tmpCad += tmpChr[j];
+                    }
+                } else {
+                    tmpCad += tmpChr;
+                }
+
+                tmpCad += "," + _auxPop.getAt(i).getFitness();
+            }
+
+            data2bSend += tmpCad;
+            try {
+                new Request({
+                    url: jsEOUtils.getSendURL(),
+                    method: 'GET',
+                    async: true,
+                    data: data2bSend,
+                    timeout: 1000,
+                    onSuccess: function (responseText) {
+                        jsEOUtils.debugln('EvRBF:operator.js:opSendInfo: Conection response: ' + responseText);
+                    },
+                    onTimeout: function () {
+                        jsEOUtils.debugln("EvRBF:operator.js:opSendInfo: Timeout while conecting to " +
+                                jsEOUtils.getSendURL());
+                        this.cancel();
+                    },
+                    onFailure: function () {
+                        jsEOUtils.debugln("EvRBF:operator.js:opSendInfo: Failure while conecting to " +
+                                jsEOUtils.getSendURL());
+                        this.cancel();
+                    }
+
+                }).send();
+            } catch (err) {
+                jsEOUtils.debugln("jsEOOpSendIndividual: Error captured!");
+                return null;
+            }
+
+            return null;
+        }
+    }); // Class opSendInfo
 
 } catch (e) {
     console.log(e.message);

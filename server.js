@@ -33,7 +33,7 @@ var keepAliveCount = 0;
 
 var sentProblems = 0;
 
-/// Date indicating when the experiment will initTime
+/// Date indicating when the experiment will start and finish
 var initTime, endTime;
 // initTime = new Date(2014, 12 - 1, 6, 11, 30, 0, 0);
 

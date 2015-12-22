@@ -12,9 +12,9 @@
  * Constructor of the class
  * @returns {ClientInfo}
  */
-function ClientInfo() {
-    this.id = null;
-    this.info = null;
+function ClientInfo(_id) {
+    this.id = _id || this.randomClientId();
+
 }
 ClientInfo.prototype.randomClientId = function (_p) {
     var letters = "ABCDEFGHIJLKMNOPQRSTUVWXYZabcdefghijklmnrstuvwxyz0987654321";
@@ -25,40 +25,39 @@ ClientInfo.prototype.randomClientId = function (_p) {
     return tmp;
 }
 
-ClientInfo.prototype.SetId = function (_p) {
-    this.id = _p || this.randomClientId();
-    this.info = {
-        "userAgent": navigator.userAgent
-        , "timestamp": (new Date()).aaaammddhhmmss()
-    }
-    // Enviar info de Navigator
-    // $$$
-    w("Setting id...");
-    $.ajax({
-        type: 'POST'
-        , url: '/clientInformation'
-        , data: {
-            "clientID": this.id
-            , "info": this.info
-        }
-        , dataType: 'json'
-        , success: function (data) {
-            console.log(w("Information about client succesfully sent to server..." + data.message));
-        }
-        , error: function (xhr, type) {
-            console.log(w("ERROR: Information about client couldn't be sent to server..."));
-        }
-    });
+ClientInfo.prototype.SetId = function (_id) {
+    this.id = _id || this.randomClientId();
     return this.id;
-};
+}
 
 ClientInfo.prototype.GetId = function () {
     return this.id;
 }
 
-ClientInfo.prototype.GetInfo = function () {
-    return this.info;
-}
+ClientInfo.prototype.SendInfo = function ( _url ) {
+    // Enviar info de Navigator
+    // $$$
+    _url= _url || "/clientInformation";
+    $.ajax({
+        type: 'POST'
+        , url: _url 
+        , data: {
+            "clientID": this.id
+            , "userAgent": navigator.userAgent
+        }
+        , dataType: 'json'
+        , success: function (data) {
+            console.log("Information about client succesfully sent to server: " + _url 
+                    + "\n Data received: "+data );
+        }
+        , error: function (xhr, type) {
+            console.log("ERROR: Information about client couldn't be sent to server..." + _url);
+        }
+    });
+    return this.id;
+};
+
+
 
 
 

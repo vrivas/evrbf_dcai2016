@@ -240,9 +240,15 @@ d6.data = [2.2345
             , 1.4423
             , 1.4197
             , 1.4236];
-d6.inputDimension = 1;
-d6.trnSamples = [];
-d6.valSamples = [];
+d6.numExecutions = 0; // NUmber of executions in this client
+d6.inputDimension = 1; // Dimension for input patterns = centers' dimension
+d6.trnSamples = []; // Samples for training
+d6.valSamples = []; // Samples for validation
+d6.timer = null;
+/**
+ * Creates the set of samples for training and validation
+ * @returns {d6} Returns d6 itself to concatenate operations
+ */
 d6.createTrnVal = function () {
     do {
         d6.trnSamples = [];
@@ -264,8 +270,14 @@ d6.createTrnVal = function () {
     } while (d6.valSamples.length <= 0); // Just in case
     console.log("TrnSamples tiene ", d6.trnSamples.length + " samples");
     console.log("ValSamples tiene ", d6.valSamples.length + " samples");
+    return this;
 }
 
+/**
+ * Tries to forecast the whole dataset, creating the corresponding inputs-output samples
+ * @param {type} _net The RBFNN that performs the forecasting (probably, the best one=population().getAt(0)
+ * @returns {Array} THe set of outputs computed by the net; one per sample.
+ */
 d6.doForecasting = function (_net) {
     var samples = [];
     // Create samples
@@ -281,6 +293,12 @@ d6.doForecasting = function (_net) {
 }
 
 
+/**
+ * Draws a graphic with expected values and yielded ones
+ * @param {type} y Expected values
+ * @param {type} f Yielded values
+ * @returns {d6} Returns the object d6 to concatenate operations.
+ */
 d6.drawForecasting = function (y, f) {
     var ctx = document.getElementById("forecasting").getContext("2d");
     var data = {
@@ -312,48 +330,124 @@ d6.drawForecasting = function (y, f) {
                 , scaleShowLabels: true
                 , legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
             });
+    return this;
+}
+
+/**
+ * Set an unique id for the client, and stores it in sessionStorage. In case it existed, it makes nothing
+ * @returns {d6} Returns the d6 object to concatenate operations
+ */
+d6.setClientInfo = function () {
+    d6.clientInfo = new ClientInfo();
+    if (typeof (Storage) !== "undefined") {
+        if (typeof (sessionStorage.clientId) !== "undefined") {
+            d6.clientInfo.SetId(sessionStorage.clientId);
+            jsEOUtils.debugln("Retrieving id stored in session: " + sessionStorage.clientId);
+        } else {
+            sessionStorage.clientId = d6.clientInfo.SetId();
+            d6.clientInfo.SendInfo();
+            jsEOUtils.debugln("Storing a new id in session: " + sessionStorage.clientId);
+        }
+    } else {
+        d6.clientInfo.SetId();
+        d6.clientInfo.SendInfo();
+        jsEOUtils.debugln("Creating (but not storing in session) a new id: " + sessionStorage.clientId);
+
+    }
+    return this;
+}
+
+/**
+ * Sends a new solution to the server to be stored in the DDBB
+ * @param {type} _rbfnn The net
+ * @param {type} _tsme The time-series measured errors yielded by the net
+ * @param {type} _url The url to which data has to be sent
+ * @returns {d6} The d6 object to allow concatenation of operations
+ */
+d6.sendNewSolution = function (_rbfnn, _tsme, _url) {
+    // Enviar info de Navigator
+    // $$$
+    _url = _url || "/newSolution";
+    $.ajax({
+        type: 'POST'
+        , url: _url
+        , data: {
+            "problem": jsEOUtils.getProblemId()
+            , "clientID": this.clientInfo.GetId()
+            , "rbfnn": JSON.stringify(_rbfnn)
+            , "tsme": _tsme // time-series measured errors
+        }
+        , dataType: 'json'
+        , success: function (data) {
+            console.log("Information about client succesfully sent to server: " + _url
+                    + "\n Data received: " + data);
+        }
+        , error: function (xhr, type) {
+            console.log("ERROR: Information about client couldn't be sent to server..." + _url);
+        }
+    });
+    return this;
+};
+
+/**
+ * Establishes the values and action for button stopTimer
+ * @returns {d6} Returns the d6 object to concatenate operations 
+ */
+d6.stopTimerActions = function () {
+    $("#stopTimer").click(function () {
+        if (d6.timer!=null) {
+            clearTimeout(d6.timer); 
+            $(this).hide();
+        } 
+    });
+    return this;
 }
 /**
  * Main function: sets some properties and executes the evolutionary algorithm
  * @returns {undefined}
  */
 d6.main = function () {
-    console.log("Executing jsEvRBF for DCAI'2016...");
-    var baseURL = "http://localhost/vrivas/iconio-php/";
-    jsEOUtils.setVerbose(eval(jsEOUtils.getInputParam("verbose", false)));
-    
-    jsEOUtils.setGetURL(baseURL + "sending.php")
-    jsEOUtils.setSendURL(baseURL + "receiving.php")
-    jsEOUtils.setProblemId("DCAI2016FORECASTING");
-    d6.createTrnVal();
-    var tmp = new js_evrbf.jsEvRBF(
-                    {"data": d6.data
-                        , "trnSamples": d6.trnSamples
-                        , "valSamples": d6.valSamples
-                        , "numNeurons": 7
-                        , "inputDimension": d6.inputDimension
-                        , "popSize": 10
-                        , "replaceRate": .8
-                        , "numGenerations": 50*0+2
-                        , "mutRate": 0.7
-                        , "mutPower": 0.5
-                        , "opSend": new jsEOOpSendIndividuals()
-                        , "opGet": new jsEOOpGetIndividuals()
-                        , "verbose": false
-                    }
-            );
-            //jsEOUtils.setShowing(tmp.popSize);
-            tmp.run(js_evrbf.fitnessFunction);
-            var expected = d6.data.slice(d6.inputDimension); // Removing the numInputs first elements
-            var forecasted = d6.doForecasting(tmp.getPopulation().getAt(0).getChromosome());
-            d6.drawForecasting(expected, forecasted);
-            console.log("MSE: ", parseFloat(TSEM.MSE(expected, forecasted).toFixed(7)).toExponential())
-            console.log("MASE: ", TSEM.MASE(expected, forecasted))
-            var msg = "";
-            if (typeof _id !== "undefined" && _id) {
-                document.getElementById(_id).innerHTML += "<p>" + msg + "</p>\n";
-            } else {
-                console.log(msg + "\n");
-            }
-            jsEOUtils.drawAverageFitness2("myChart");
+    try {
+        console.log("Executing jsEvRBF for DCAI'2016...");
+        jsEOUtils.setVerbose(eval(jsEOUtils.getInputParam("verbose", false)));
+        jsEOUtils.setProblemId("DCAI2016FORECASTING");
+        jsEOUtils.clear(); // Clears jsEOConsole
+        console.clear();
+        d6.stopTimerActions();
+        d6.setClientInfo();
+        d6.createTrnVal();
+        var algorithm = new js_evrbf.jsEvRBF(
+                {"data": d6.data
+                    , "trnSamples": d6.trnSamples
+                    , "valSamples": d6.valSamples
+                    , "numNeurons": 7
+                    , "inputDimension": d6.inputDimension
+                    , "popSize": 10
+                    , "replaceRate": .8
+                    , "numGenerations": 10
+                    , "mutRate": 0.7
+                    , "mutPower": 0.5
+                            //, "opSend": new jsEOOpSendIndividuals()
+                            //, "opGet": new jsEOOpGetIndividuals()
+                    , "verbose": false
+                }
+        );
+        //jsEOUtils.setShowing(tmp.popSize);
+        algorithm.run(js_evrbf.fitnessFunction);
+        var expected = d6.data.slice(d6.inputDimension); // Removing the numInputs first elements
+        var forecasted = d6.doForecasting(algorithm.getPopulation().getAt(0).getChromosome());
+        var tsem = TSEM.setOfErrors(expected, forecasted);
+        d6.sendNewSolution(algorithm.getPopulation().getAt(0).getChromosome(), tsem);
+        d6.drawForecasting(expected, forecasted);
+        var msg = "";
+        if (typeof _id !== "undefined" && _id) {
+            document.getElementById(_id).innerHTML += "<p>" + msg + "</p>\n";
+        } else {
+            console.log(msg + "\n");
         }
+        jsEOUtils.drawAverageFitness2("myChart");
+        d6.timer = setTimeout(d6.main, 3000);
+    } catch (e) {
+        console.log("Error: d6.main: " + e);
+    }
+}
