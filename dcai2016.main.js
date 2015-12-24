@@ -245,6 +245,7 @@ d6.inputDimension = 1; // Dimension for input patterns = centers' dimension
 d6.trnSamples = []; // Samples for training
 d6.valSamples = []; // Samples for validation
 d6.timer = null;
+d6.bestFitness = 0; // Best fitness found up to this moment in this client
 /**
  * Creates the set of samples for training and validation
  * @returns {d6} Returns d6 itself to concatenate operations
@@ -303,7 +304,7 @@ d6.drawForecasting = function (y, f) {
     var ctx = document.getElementById("forecasting").getContext("2d");
     var data = {
         labels: y.map(function (e, i) {
-            return i;
+            return !(i%10)?i:"";
         }),
         datasets: [
             {
@@ -327,7 +328,9 @@ d6.drawForecasting = function (y, f) {
     new Chart(ctx).Line(data,
             {
                 pointDot: false
+                , scaleSteps: 10
                 , scaleShowLabels: true
+                , responsive: true
                 , legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
             });
     return this;
@@ -395,10 +398,13 @@ d6.sendNewSolution = function (_rbfnn, _tsme, _url) {
  */
 d6.stopTimerActions = function () {
     $("#stopTimer").click(function () {
-        if (d6.timer!=null) {
-            clearTimeout(d6.timer); 
+        if (d6.timer != null) {
+            clearTimeout(d6.timer);
+            d6.timer = null;
             $(this).hide();
-        } 
+            jsEOUtils.print("<p>Finally, <strong>all the executions have ended!!</strong> Thanks for helping us!</p>")
+            jsEOUtils.print("<p>Do you want to <a href='javascript:history.go(0);'>execute a new set of experiments again?</a></p>");
+        }
     });
     return this;
 }
@@ -406,13 +412,13 @@ d6.stopTimerActions = function () {
  * Main function: sets some properties and executes the evolutionary algorithm
  * @returns {undefined}
  */
-d6.main = function () {
+d6.main = function (maxExecutions) {
+    maxExecutions = maxExecutions || 1;
     try {
         console.log("Executing jsEvRBF for DCAI'2016...");
+
         jsEOUtils.setVerbose(eval(jsEOUtils.getInputParam("verbose", false)));
         jsEOUtils.setProblemId("DCAI2016FORECASTING");
-        jsEOUtils.clear(); // Clears jsEOConsole
-        console.clear();
         d6.stopTimerActions();
         d6.setClientInfo();
         d6.createTrnVal();
@@ -433,20 +439,33 @@ d6.main = function () {
                 }
         );
         //jsEOUtils.setShowing(tmp.popSize);
+        ++d6.numExecutions;
+
+        // Writting some pre-execution information:
+        jsEOUtils.replace( navigator.userAgent, "sp_browser")
+                .replace(d6.numExecutions, "sp_numExecutions")
+                .replace( d6.numExecutions, "sp_numExecutionsTitle")
+                .replace(maxExecutions, "sp_maxExecutions")
+                .replace(maxExecutions, "sp_maxExecutionsTitle")
+                .replace(((d6.numExecutions / maxExecutions) * 100).toFixed(1)+"%", "sp_percExecutions");
+
         algorithm.run(js_evrbf.fitnessFunction);
+        d6.bestFitness = (d6.bestFitness > (tmp = algorithm.getPopulation().getAt(0).getFitness())) ? d6.bestFitness : tmp;
         var expected = d6.data.slice(d6.inputDimension); // Removing the numInputs first elements
         var forecasted = d6.doForecasting(algorithm.getPopulation().getAt(0).getChromosome());
         var tsem = TSEM.setOfErrors(expected, forecasted);
         d6.sendNewSolution(algorithm.getPopulation().getAt(0).getChromosome(), tsem);
         d6.drawForecasting(expected, forecasted);
-        var msg = "";
-        if (typeof _id !== "undefined" && _id) {
-            document.getElementById(_id).innerHTML += "<p>" + msg + "</p>\n";
-        } else {
-            console.log(msg + "\n");
-        }
+        jsEOUtils.replace(algorithm.getPopulation().getAt(0).getFitness().toFixed(3), "sp_currentFitness")
+                .replace(tsem.MAPE.toFixed(3), "sp_currentMAPE")
+                .replace(d6.bestFitness.toFixed(3), "sp_bestFitness");
+
         jsEOUtils.drawAverageFitness2("myChart");
-        d6.timer = setTimeout(d6.main, 3000);
+        if (d6.numExecutions < maxExecutions) {
+            d6.timer = setTimeout(d6.main, 3000, maxExecutions);
+        } else {
+            $("#stopTimer").click();
+        }
     } catch (e) {
         console.log("Error: d6.main: " + e);
     }

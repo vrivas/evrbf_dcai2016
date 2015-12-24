@@ -1,0 +1,138 @@
+/**
+ *  @file    paper.css
+ *  @author  Victor M. Rivas Santos <vrivas@ujaen.es>
+ *  @date    23-dic-2015 , 14:10:02
+ *  @desc    Style-sheet to display the page as a paper for review :)
+ *
+ *  -------------------------------------
+ *  GeNeura Team (http://geneura.ugr.es)
+ */
+body, html {
+    background-color: #ddd;
+}
+article {
+    width: 1200px;
+    margin: 0 auto 0 auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    background-color: #fff;
+    border: 1px solid #777;
+}
+article > header {
+    text-align: center;
+}
+article > header h1 {
+    font-size: 180%;
+}
+
+article header h1
+, article header h3 {
+    margin: 0.3em;
+}
+
+.columns
+, footer {
+    -webkit-column-count: 2; /* Chrome, Safari, Opera */
+    -moz-column-count: 2; /* Firefox */
+    column-count: 2;
+
+    -moz-column-width: 580px;
+    -webkit-column-width: 580px;
+    column-width: 580px;
+
+    -moz-column-gap: 40px;
+    -webkit-column-gap: 40px;
+    column-gap: 40px;
+
+
+}
+
+#myChart{
+    width: 580px;
+    height: 200px;
+}
+#forecasting {
+    width: 580px;
+    height: 200px;
+}
+#stopTimer {
+    width: 99%;
+    height: 4em;
+    margin-bottom: .5em;
+}
+
+#footnote {
+    border-top: 1px solid #000;
+    margin-top: 0.5em;
+    padding-top: 0.5em;
+}
+
+.figure-caption {
+    text-align: center;
+    font-size: 90%;
+}
+
+#abstract, #keywords {
+    font-size: 90%;
+    margin-bottom: .5em;
+}
+
+#sp_numExecutions
+, #sp_maxExecutions
+, #sp_currentFitness
+, #sp_currentMAPE
+, #sp_bestFitness
+, #sp_percExecutions
+, #sp_browser{
+    font-style: italic;
+}
+@media (max-width: 1200px) {
+    .columns, footer {
+        -webkit-column-count: 1; /* Chrome, Safari, Opera */
+        -moz-column-count: 1; /* Firefox */
+        column-count: 1;
+    }
+    article {
+        width: 600px;
+    }
+    #stopTimer {
+        width: 99%;
+    }
+    #myChart{
+        width: 580px;
+        height: 200px;
+    }
+    #forecasting {
+        width: 580px;
+        height: 200px;
+
+    }
+}
+
+@media (max-width: 600px) {
+    .columns, footer {
+        -webkit-column-count: 1; /* Chrome, Safari, Opera */
+        -moz-column-count: 1; /* Firefox */
+        column-count: 1;
+    }
+    article {
+        width: 100%;
+        border-width: 0px;
+        padding: 1px;
+    }
+    #stopTimer {
+        width: 99%;
+    }
+    #myChart{
+        width: 90%;
+        height: 200px;
+    }
+    #forecasting {
+        width: 90%;
+        height: 200px;
+
+    }
+}
+

@@ -11,7 +11,7 @@
 var fs = require('fs');
 eval(fs.readFileSync('./config.js') + '');
 //eval(fs.readFileSync('./iconio.Date.js') + '');
-eval(fs.readFileSync('./dcai2016/dcai2016.Persistence.js') + '');
+eval(fs.readFileSync('./dcai2016.Persistence.js') + '');
 //eval(fs.readFileSync('iconio.Experiment.js') + '');
 
 
@@ -60,11 +60,13 @@ var cb = {
 
     saveClientInformation: function (req, res, mongoose) {
         req.body.initTime = Date.now();
-        console.log("Client information ");
-        for (b in req.body) {
-            console.log(b + ": " + req.body[b]);
-        }
-
+        /*
+         
+         console.log("Client information ");
+         for (b in req.body) {
+         console.log(b + ": " + req.body[b]);
+         }
+         */
         // Storing in database
         db.saveNavigatorInfo(req.body["clientID"], req.body["userAgent"]);
         allowCORS(res)
@@ -74,15 +76,17 @@ var cb = {
     }
 
     , saveNewSolution: function (req, res) {
-        console.log( "SaveNewSolution");
-        console.log( 
+        /*
+        console.log("SaveNewSolution");
+        console.log(
                 db.saveNewSolution(
-                req.body["problem"]
-                , req.body["clientID"]
-                , req.body["rbfnn"]
-                , req.body["tsme"]
-                )
-        );
+                        req.body["problem"]
+                        , req.body["clientID"]
+                        , req.body["rbfnn"]
+                        , req.body["tsme"]
+                        )
+                );
+        */
         allowCORS(res)
         res.writeHead(200, {"Content-type": "application/json"});
         res.write(JSON.stringify({"message": "ok"}));

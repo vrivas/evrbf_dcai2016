@@ -79,7 +79,7 @@ var db = {
         , function (err, small) {
             if (err)
                 return handleError(err);
-            console.log("Navigator's info stored in DDBB: " + clientId + ", " + userAgent);
+            //console.log("Navigator's info stored in DDBB: " + clientId + ", " + userAgent);
         });
     }
     ,
@@ -89,11 +89,13 @@ var db = {
      * @returns {void}
      */
     saveNewSolution: function (problem, clientID, rbfnn, tsme) {
-        console.log("Trying to store a new Solution's  in DDBB: "
-                    + " Problem: " + problem           
-                    + " Client ID: " + clientID
-                    + " RBFNN: " + rbfnn
-                    + " Errors: " + tsme);
+        /*
+         console.log("Trying to store a new Solution's  in DDBB: "
+         + " Problem: " + problem           
+         + " Client ID: " + clientID
+         + " RBFNN: " + rbfnn
+         + " Errors: " + tsme);
+         */
         this.solutionModel.create({
             'problem': problem
             , 'clientID': clientID
@@ -103,11 +105,12 @@ var db = {
         , function (err, small) {
             if (err)
                 return handleError(err);
-            else return ("New Solution's info stored in DDBB: "
-                    + " Problem: " + problem           
-                    + " Client ID: " + clientID
-                    + " RBFNN: " + rbfnn
-                    + " Errors: " + tsme);
+            else
+                return ("New Solution's info stored in DDBB: "
+                        + " Problem: " + problem
+                        + " Client ID: " + clientID
+                        + " RBFNN: " + rbfnn
+                        + " Errors: " + tsme);
         });
     }
 };

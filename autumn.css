@@ -1,0 +1,86 @@
+
+
+body, html {
+    background-color: #8F6300;
+}
+article {
+    margin-left: 3em;
+    margin-right: -1em;
+    margin-top: -1em;
+    padding-left: 2em;
+    padding-right: 2em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    background-color: #FFE0A6;
+    border: 01px solid #66a;
+    border: 0px;
+}
+header h1 {
+    margin-left: -5em;
+    width: 100%;
+    border-radius: 0 10px 10px 0;
+    padding: .5em;
+    padding-left: 4em;
+    text-align: left;
+    background-image: url(https://vrivas.files.wordpress.com/2015/12/cropped-fondo-arboles-parque-jaen.jpg);
+    color: #fff;
+    font-size: 200%;
+}
+header h2 {
+    margin-left: -5em;
+    width: 40%;
+    border-radius: 0 10px 10px 0;
+    padding: .5em;
+    padding-left: 4em;
+    text-align: left;
+    background-color: #9E3B00;
+    color: #FFD24F;
+    font-size: 100%;
+}
+#console {
+    width: 45%;
+    float: left;
+    min-width: 40em;
+}
+#ft_vs_gn {
+    width: 45%;
+    float: left;
+    max-height: 15em;
+    min-width: 40em;
+    padding-left: .5em;
+}
+#jsEOConsole {
+    max-height: 15em;
+    overflow: auto;
+    font-size: 90%;
+    padding-right: .5em;
+}
+#jsEOConsole h2{
+    font-size: 90%;
+
+}
+
+#fo_vs_ex {
+    clear: both;
+    width: 100%;
+    padding-top: 1em;
+}
+#myChart{
+    width: 100%;
+    height: 200px;
+}
+#forecasting {
+    width: 90%;
+    height: 200px;
+}
+#stopTimer {
+    width: 50%;
+    height: 4em;
+    margin-bottom: .5em;
+}
+#initAgain {
+    display: none;
+}
+
+
+

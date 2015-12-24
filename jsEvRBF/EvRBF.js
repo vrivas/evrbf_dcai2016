@@ -289,11 +289,11 @@ try {
                 this.operSelector.addOperator(this.opGet);
             }
 
-            jsEOUtils.showPop(this.population, "Initial population");
-            jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
+            //jsEOUtils.showPop(this.population, "Initial population");
+            //jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
             this.privateRun(_fitFn, {"valSamples": this.valSamples}, this.numGenerations);
-            jsEOUtils.showPop(this.population, "Final population");
-            jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
+            //jsEOUtils.showPop(this.population, "Final population");
+            //jsEOUtils.println("Average fitness: " + jsEOUtils.averageFitness(this.population));
             //jsEOUtils.drawStats();
 
         }
@@ -331,15 +331,7 @@ try {
         tmp.popSize = 10;
         tmp.replaceRate = 0.75;
         tmp.numGenerations = 300;
-        tmp.run(js_evrbf.fitnessFunction);
-        _id = document.getElementById(_id);
-        var msg = "";
-        if (_id) {
-            _id.innerHTML += "<p>" + msg + "</p>\n";
-        } else {
-            console.log(msg + "\n");
-        }
-        jsEOUtils.drawAverageFitness2();
+        tmp.run(js_evrbf.fitnessFunction);        
     };
 } catch (e) {
     console.log(e.message);
