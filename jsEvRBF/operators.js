@@ -34,61 +34,67 @@ try {
         throw new ReferenceError("EvRBF won't work since jsEVRBF/EvRBF.js has not been loaded");
     if (typeof jsEOOperator === "undefined")
         throw new ReferenceError("EvRBF won't work since jsEO/core/jsEOperator.js has not been loaded");
-    /*
-     js_evrbf.jsXOver = new Class({// ### Aün sin hacer
-     Extends: jsEOOperator,
-     initialize: function (_applicationRate, _bitsRate) {
-     this.parent(_applicationRate);
-     this.bitsRate = _bitsRate;
-     jsEOUtils.debugln("Initializing a js_evrf.XOver with " +
-     "applicationRate " + this.applicationRate);
-     
-     },
-     operate: function (_auxPop) {
-     jsEOUtils.debugln("Applying js_evrf.XOver");
-     var toRet = new jsEOPopulation();
-     if (typeof _auxPop == 'undefined') {
-     return toRet;
-     }
-     if (_auxPop.length() <= 0) {
-     toRet.add(_auxPop.getAt(0).copy());
-     return toRet;
-     }
-     
-     var rnd2 = Math.floor(Math.random() * (_auxPop.length() - 1)) + 1;
-     jsEOUtils.debugln("  rnd2 is " + rnd2 +
-     " while length is " + _auxPop.length() +
-     " and " + typeof _auxPop.pop[0]);
-     
-     var tmpChr1 = _auxPop.getAt(0).getChromosome();
-     var tmpChr2 = _auxPop.getAt(rnd2).getChromosome();
-     var point1 = Math.floor(Math.random() * (tmpChr1.length - 1));
-     var point2 = point1 + Math.floor(Math.random() * (tmpChr1.length - point1));
-     
-     jsEOUtils.debugln("  Individuals are " + tmpChr1 + " and " + tmpChr2);
-     jsEOUtils.debugln("  Points are " + point1 + " and " + point2);
-     
-     var newChr = new Array();
-     for (var i = 0; i < point1; ++i) {
-     newChr.push(tmpChr1[i]);
-     }
-     for (var i = point1; i <= point2; ++i) {
-     newChr.push(tmpChr2[i]);
-     }
-     for (var i = point2 + 1; i < tmpChr1.length; ++i) {
-     newChr.push(tmpChr1[i]);
-     }
-     
-     jsEOUtils.debugln("  Inicio es " + tmpChr1 + " Final  " + newChr);
-     toRet.add(new jsEOFVIndividual());
-     toRet.getAt(0).setChromosome(newChr);
-     return toRet;
-     }
-     });
-     
-     */
     /**
-     * Centers Mutator... transitory until re-reading the original paper
+     * XOver Mutator... transitory until re-reading the original paper
+     * @type Class
+     */
+    js_evrbf.XOver = new Class({
+        Extends: jsEOOperator,
+        initialize: function (_applicationRate, _trnSamples, _trainIterations, _trainAlfa) {
+            this.parent(_applicationRate);
+            this.trnSamples = _trnSamples || [];
+            this.trainIterations = _trainIterations || 1;
+            this.trainAlfa = _trainAlfa || 0;
+            jsEOUtils.debugln("Initializing a js_evrf.XOver with"
+                    + " applicationRate " + this.applicationRate);
+        },
+        operate: function (_auxPop) {
+            jsEOUtils.debugln("Applying js_evrf.XOver ");
+            //console.log("Applying js_evrf.XOver");
+            var ch0 = _auxPop.getAt(0).getChromosome().copy();
+            var ch1 = _auxPop.getAt(1).getChromosome().copy();
+            var chX = ch0.copy();
+
+            var p0_ini = jsEOUtils.intRandom(0, ch0.size() - 1);
+            var p0_end = jsEOUtils.intRandom(p0_ini + 1, ch0.size() - 1);
+            var p1_ini = jsEOUtils.intRandom(0, ch1.size() - 1);
+            var p1_end = jsEOUtils.intRandom(p1_ini + 1, ch1.size() - 1);
+            /*
+             console.log("Chromosome 0: size: " + ch0.size() + ", ini: " + p0_ini + ", end: " + p0_end
+             , "Chromosome 1: size: " + ch1.size() + ", ini: " + p1_ini + ", end: " + p1_end);
+             */
+            // Interchanging neurons
+            ch0.neurons = ch0.neurons.slice(0, p0_ini).concat(ch1.neurons.slice(p1_ini, p1_end)).concat(ch0.neurons.slice(p0_end, ch0.neurons.length));
+            ch1.neurons = ch1.neurons.slice(0, p1_ini).concat(chX.neurons.slice(p0_ini, p0_end)).concat(ch1.neurons.slice(p1_end, ch1.neurons.length));
+
+
+            ch0.trainLMS(
+                    this.trnSamples.map(function (e) {
+                        return e.input;
+                    }) // INputs
+                    , this.trnSamples.map(function (e) {
+                        return e.output;
+                    })// Desired outputs
+                    , this.trainIterations // Iterations
+                    , this.trainAlfa);
+            ch1.trainLMS(
+                    this.trnSamples.map(function (e) {
+                        return e.input;
+                    }) // INputs
+                    , this.trnSamples.map(function (e) {
+                        return e.output;
+                    })// Desired outputs
+                    , this.trainIterations // Iterations
+                    , this.trainAlfa);
+            return (new jsEOPopulation())
+                    .add(new js_evrbf.individual(ch0))
+                    .add(new js_evrbf.individual(ch1));
+        }
+    });
+
+
+    /**
+     * Centers Mutator...transitory until re - reading the original paper
      * @type Class
      */
     js_evrbf.CenterMut = new Class({

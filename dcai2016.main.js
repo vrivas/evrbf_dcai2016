@@ -268,9 +268,7 @@ d6.createTrnVal = function () {
                 }
             }
         }
-    } while (d6.valSamples.length <= 0); // Just in case
-    console.log("TrnSamples tiene ", d6.trnSamples.length + " samples");
-    console.log("ValSamples tiene ", d6.valSamples.length + " samples");
+    } while (d6.valSamples.length <= 0); // Just in case    
     return this;
 }
 
@@ -331,6 +329,7 @@ d6.drawForecasting = function (y, f) {
                 , scaleSteps: 10
                 , scaleShowLabels: true
                 , responsive: true
+                , animation: false
                 , legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
             });
     return this;

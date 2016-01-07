@@ -55,38 +55,38 @@ try {
         , configure: false
         , popSize: 100
         , tournamentSize: 2
-        , xOverRate: 0.8
-        , mutRate: 0.2
-        , mutPower: 0.5
+        , xOverRate: 0.5
+        , mutRate: 0.8
+        , mutPower: 0.2
         , numGenerations: 100
         , replaceRate: 0.3
         , getIndividualsRate: 0.0 // Initially, no communication with server is needed
 
-        , initialize: function ( params
+        , initialize: function (params
                 // Possible params
                 /*
-                _data
-                , _trnSamples
-                , _valSamples
-                , _numNeurons
-                , _inputDimension
-                , _trnValRate
-                , _trainIterations
-                , _trainAlfa
-                , _opSend
-                , _opGet
-                , _verbose
-                , _configure
-                , _popSize
-                , _tournamentSize
-                , _xOverRate
-                , _mutRate
-                , _mutPower
-                , _numGenerations
-                , _replaceRate
-                , _getIndividualsRate
-                , _showing
-                  */      
+                 _data
+                 , _trnSamples
+                 , _valSamples
+                 , _numNeurons
+                 , _inputDimension
+                 , _trnValRate
+                 , _trainIterations
+                 , _trainAlfa
+                 , _opSend
+                 , _opGet
+                 , _verbose
+                 , _configure
+                 , _popSize
+                 , _tournamentSize
+                 , _xOverRate
+                 , _mutRate
+                 , _mutPower
+                 , _numGenerations
+                 , _replaceRate
+                 , _getIndividualsRate
+                 , _showing
+                 */
                 ) {
             if (!params.numNeurons || params.numNeurons < 1)
                 throw new RangeError("The number of (hidden) neurons is smaller than 1, jsEvRBF can't create nets...");
@@ -231,7 +231,7 @@ try {
                 return;
             }
 
-            if (this.data.length > 0 && (this.trnSamples.length<=0 || this.valSamples.length<=0)) {
+            if (this.data.length > 0 && (this.trnSamples.length <= 0 || this.valSamples.length <= 0)) {
                 // Creating the patterns needed by the algorithm only if data is provide
                 // in other case, use trnSamples and valSamples
                 jsEOUtils.debugln("Creating patterns,  splitting TRN/VAL ");
@@ -270,6 +270,10 @@ try {
 
 
             this.operSelector
+                    .addOperator(new js_evrbf.XOver(this.xOverRate
+                            , this.trnSamples
+                            , this.trainIterations
+                            , this.trainAlfa))
                     .addOperator(new js_evrbf.CenterMut(this.mutRate
                             , this.mutPower
                             , minValue
@@ -331,7 +335,7 @@ try {
         tmp.popSize = 10;
         tmp.replaceRate = 0.75;
         tmp.numGenerations = 300;
-        tmp.run(js_evrbf.fitnessFunction);        
+        tmp.run(js_evrbf.fitnessFunction);
     };
 } catch (e) {
     console.log(e.message);
