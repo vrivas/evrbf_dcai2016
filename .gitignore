@@ -5,3 +5,5 @@
 /node_modules/*
 
 *.properties
+*~
+nohup.out
