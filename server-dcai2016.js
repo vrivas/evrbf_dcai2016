@@ -16,7 +16,7 @@ eval(fs.readFileSync('./dcai2016.Persistence.js') + '');
 
 
 /// Id for the experiment
-var experimentId = "DCAI2016"
+var experimentId = "DCAI_20160108"
 
 
 function distance(data1, data2) {
@@ -76,17 +76,16 @@ var cb = {
     }
 
     , saveNewSolution: function (req, res) {
-        /*
-        console.log("SaveNewSolution");
-        console.log(
+        
+        //console.log("SaveNewSolution");
+
                 db.saveNewSolution(
                         req.body["problem"]
                         , req.body["clientID"]
                         , req.body["rbfnn"]
                         , req.body["tsme"]
-                        )
-                );
-        */
+                        );
+        
         allowCORS(res)
         res.writeHead(200, {"Content-type": "application/json"});
         res.write(JSON.stringify({"message": "ok"}));

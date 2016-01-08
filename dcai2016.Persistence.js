@@ -96,6 +96,10 @@ var db = {
          + " RBFNN: " + rbfnn
          + " Errors: " + tsme);
          */
+        // Fixing NaN errors
+        for( i in tsme ) {
+          tsme[i]=(isNaN(tsme[i]))?1e6:tsme[i];
+        }
         this.solutionModel.create({
             'problem': problem
             , 'clientID': clientID

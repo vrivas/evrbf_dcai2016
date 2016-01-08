@@ -367,8 +367,6 @@ d6.setClientInfo = function () {
  * @returns {d6} The d6 object to allow concatenation of operations
  */
 d6.sendNewSolution = function (_rbfnn, _tsme, _url) {
-    // Enviar info de Navigator
-    // $$$
     _url = _url || "/newSolution";
     $.ajax({
         type: 'POST'
@@ -449,7 +447,8 @@ d6.main = function (maxExecutions) {
                 .replace(((d6.numExecutions / maxExecutions) * 100).toFixed(1)+"%", "sp_percExecutions");
 
         algorithm.run(js_evrbf.fitnessFunction);
-        d6.bestFitness = (d6.bestFitness > (tmp = algorithm.getPopulation().getAt(0).getFitness())) ? d6.bestFitness : tmp;
+        var tmpFitness = algorithm.getPopulation().getAt(0).getFitness()
+        d6.bestFitness = (!tmpFitness || d6.bestFitness > tmpFitness) ? d6.bestFitness : tmpFitness;
         var expected = d6.data.slice(d6.inputDimension); // Removing the numInputs first elements
         var forecasted = d6.doForecasting(algorithm.getPopulation().getAt(0).getChromosome());
         var tsem = TSEM.setOfErrors(expected, forecasted);
