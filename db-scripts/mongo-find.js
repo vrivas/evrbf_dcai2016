@@ -26,8 +26,10 @@
  */
 
 // Test
+var nav=db.navigator_dcai_20160108;
+var sol=db.solution_dcai_20160108;
 function minim() {
-    return db.solution_dcai2016.group(
+    return sol.group(
             {
                 "initial": {}
                 , "reduce": function (obj, prev) {
@@ -40,11 +42,11 @@ function minim() {
 }
 
 function all() {
-    return db.solution_dcai2016.find();
+    return sol.find();
 }
 
 function sortByMape(_numRecords) {
-    return db.solution_dcai2016.find({}, {"_id": 1, "tsme.MAPE": 1}).limit(_numRecords).sort({"tsme.MAPE": 1});
+    return sol.find({}, {"_id": 1, "tsme.MAPE": 1}).limit(_numRecords).sort({"tsme.MAPE": 1});
 }
 
 function sortBy( _measure, _numRecords) {
@@ -52,5 +54,80 @@ function sortBy( _measure, _numRecords) {
     fields['tsme.'+_measure]=1;
     sorting['tsme.'+_measure]=1;
     
-    return db.solution_dcai2016.find({}, fields).limit(_numRecords).sort(sorting);
+    return sol.find({}, fields).limit(_numRecords).sort(sorting);
+}
+
+
+function numClients() {
+   return nav.find().length();
+}
+
+
+
+function clientsByUserAgent( cad ) {	
+    // Chrome browsers also include "Safari" in their descriptions
+    if( cad==="Safari" ) return safari();
+    
+    var byQuery=nav.find( { userAgent: new RegExp(cad)}).length();
+    var total=numClients();
+    return { "query": cad
+        , "byQuery": byQuery
+        , "total": total
+        , "rate": ((byQuery/total)*100).toFixed(2)+"%"  
+    }
+}
+
+
+function linux() {
+    return clientsByUserAgent( "Linux" );  
+}
+
+function windows() {
+    return clientsByUserAgent( "Windows" );  
+}
+
+function android() {
+    return clientsByUserAgent( "Android" );  
+}
+
+
+function chrome() {
+    return clientsByUserAgent( "Chrome" );  
+}
+
+// Chrome browsers also include "Safari" in their descriptions
+function safari() {
+    var safari=nav.find( { userAgent: new RegExp("Safari")}).length();
+    var chrome=nav.find( { userAgent: new RegExp("Chrome")}).length();
+    var byQuery=safari-chrome;
+    var total=numClients();
+    return { "query": "Safari"
+        , "byQuery": byQuery
+        , "total": total
+        , "rate": ((byQuery/total)*100).toFixed(2)+"%"  
+    }
+
+
+}
+
+function clientsSorted() {
+    return nav.find({}, {"userAgent":1}).sort( {"userAgent": 1});
+}
+
+
+
+function os() {
+ return clientsSorted().map( 
+     function(e) {
+         return /\(([^)]+)\)/.exec( e.userAgent)[1];
+    });
+}
+
+function browsers() {
+ var navs=nav.find({}, {"userAgent":1});
+ return navs.map(
+  function(e) {
+    return e.userAgent.substr(e.userAgent.search("\\)" )+2)
+  })
+  .sort();
 }
