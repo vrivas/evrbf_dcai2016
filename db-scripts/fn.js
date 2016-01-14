@@ -1,6 +1,6 @@
 /**
- * @file mongo-find
- * @brief Put the description here!!!!
+ * @file fn.js
+ * @brief Functions to extract data from database
  * @date 21/dic/2015, 12:00
  * @author Victor M. Rivas Santos <vrivas@ujaen.es>
  *         Geneura Team (http://geneura.wordpress.com)
@@ -41,25 +41,27 @@ function minim() {
     )
 }
 
-function all() {
-    return sol.find();
+
+function solutions( ) {
+    return sol.find({"tsme.MSE":{$ne:1e6}});
 }
 
-function sortByMape(_numRecords) {
-    return sol.find({}, {"_id": 1, "tsme.MAPE": 1}).limit(_numRecords).sort({"tsme.MAPE": 1});
-}
 
 function sortBy( _measure, _numRecords) {
-    var fields={ "id": 1}, sorting={};
+    var fields={ "id": 1}, sorting={}, query={};
     fields['tsme.'+_measure]=1;
     sorting['tsme.'+_measure]=1;
-    
-    return sol.find({}, fields).limit(_numRecords).sort(sorting);
+    query["tsme."+_measure]={$ne:1e6};
+    return sol.find(query, fields).limit(_numRecords).sort(sorting);
 }
 
 
 function numClients() {
    return nav.find().length();
+}
+
+function numSolutions() {
+  return sol.find().length();
 }
 
 
@@ -95,6 +97,10 @@ function chrome() {
     return clientsByUserAgent( "Chrome" );  
 }
 
+function firefox() {
+    return clientsByUserAgent( "Firefox" );  
+}
+
 // Chrome browsers also include "Safari" in their descriptions
 function safari() {
     var safari=nav.find( { userAgent: new RegExp("Safari")}).length();
@@ -106,8 +112,6 @@ function safari() {
         , "total": total
         , "rate": ((byQuery/total)*100).toFixed(2)+"%"  
     }
-
-
 }
 
 function clientsSorted() {
@@ -117,17 +121,43 @@ function clientsSorted() {
 
 
 function os() {
- return clientsSorted().map( 
+ var oss=clientsSorted().map( 
      function(e) {
          return /\(([^)]+)\)/.exec( e.userAgent)[1];
     });
+    
+  var toRet=[];
+  var lastOS="";
+  oss.forEach( function(e) {
+   if( e==lastOS ) 
+     toRet[toRet.length-1].count++; 
+     else {
+      toRet.push( {"os": e, "count":1 });
+      lastOS=e;
+    }
+   });
+   return toRet;
+
 }
 
 function browsers() {
  var navs=nav.find({}, {"userAgent":1});
- return navs.map(
+ navs=navs.map(
   function(e) {
     return e.userAgent.substr(e.userAgent.search("\\)" )+2)
   })
   .sort();
+  var toRet=[];
+  var lastBrowser="";
+  navs.forEach( function(e) {
+   if( e==lastBrowser ) 
+     toRet[toRet.length-1].count++; 
+     else {
+      toRet.push( {"browser": e, "count":1 });
+      lastBrowser=e;
+    }
+   });
+   return toRet;
 }
+
+
