@@ -423,12 +423,12 @@ d6.main = function (maxExecutions) {
                 {"data": d6.data
                     , "trnSamples": d6.trnSamples
                     , "valSamples": d6.valSamples
-                    , "numNeurons": 7
+                    , "numNeurons": 10
                     , "inputDimension": d6.inputDimension
-                    , "popSize": 10
-                    , "replaceRate": .8
-                    , "numGenerations": 10
-                    , "mutRate": 0.7
+                    , "popSize": 15
+                    , "numGenerations": 50
+                    , "replaceRate": .2
+                    , "mutRate": 0.8
                     , "mutPower": 0.5
                             //, "opSend": new jsEOOpSendIndividuals()
                             //, "opGet": new jsEOOpGetIndividuals()
