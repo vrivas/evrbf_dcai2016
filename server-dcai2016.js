@@ -16,7 +16,7 @@ eval(fs.readFileSync('./dcai2016.Persistence.js') + '');
 
 
 /// Id for the experiment
-var experimentId = "DCAI_20160119"
+var experimentId = "DCAI2016FORECASTING"
 
 
 function distance(data1, data2) {
