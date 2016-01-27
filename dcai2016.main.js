@@ -428,6 +428,7 @@ d6.main = function (maxExecutions) {
                     , "popSize": 15
                     , "numGenerations": 50
                     , "replaceRate": .2
+                    , "xOverRate": .2
                     , "mutRate": 0.8
                     , "mutPower": 0.5
                             //, "opSend": new jsEOOpSendIndividuals()
