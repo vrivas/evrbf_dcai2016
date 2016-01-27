@@ -425,6 +425,7 @@ d6.main = function (maxExecutions) {
                     , "valSamples": d6.valSamples
                     , "numNeurons": 10
                     , "inputDimension": d6.inputDimension
+                    , "tournamentSize": 3
                     , "popSize": 15
                     , "numGenerations": 50
                     , "replaceRate": .2
