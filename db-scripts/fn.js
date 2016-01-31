@@ -49,6 +49,7 @@ function solutions( ) {
 
 function sortBy( _measure, _numRecords) {
     var fields={ "id": 1}, sorting={}, query={};
+    fields["clientID"]=1;
     fields['tsme.'+_measure]=1;
     sorting['tsme.'+_measure]=1;
     query["tsme."+_measure]={$ne:1e6};
@@ -66,39 +67,39 @@ function numSolutions() {
 
 
 
-function clientsByUserAgent( cad ) {	
+function clientsByUserAgent( cad ) {
     // Chrome browsers also include "Safari" in their descriptions
     if( cad==="Safari" ) return safari();
-    
+
     var byQuery=nav.find( { userAgent: new RegExp(cad)}).length();
     var total=numClients();
     return { "query": cad
         , "byQuery": byQuery
         , "total": total
-        , "rate": ((byQuery/total)*100).toFixed(2)+"%"  
+        , "rate": ((byQuery/total)*100).toFixed(2)+"%"
     }
 }
 
 
 function linux() {
-    return clientsByUserAgent( "Linux" );  
+    return clientsByUserAgent( "Linux" );
 }
 
 function windows() {
-    return clientsByUserAgent( "Windows" );  
+    return clientsByUserAgent( "Windows" );
 }
 
 function android() {
-    return clientsByUserAgent( "Android" );  
+    return clientsByUserAgent( "Android" );
 }
 
 
 function chrome() {
-    return clientsByUserAgent( "Chrome" );  
+    return clientsByUserAgent( "Chrome" );
 }
 
 function firefox() {
-    return clientsByUserAgent( "Firefox" );  
+    return clientsByUserAgent( "Firefox" );
 }
 
 // Chrome browsers also include "Safari" in their descriptions
@@ -110,7 +111,7 @@ function safari() {
     return { "query": "Safari"
         , "byQuery": byQuery
         , "total": total
-        , "rate": ((byQuery/total)*100).toFixed(2)+"%"  
+        , "rate": ((byQuery/total)*100).toFixed(2)+"%"
     }
 }
 
@@ -121,16 +122,16 @@ function clientsSorted() {
 
 
 function os() {
- var oss=clientsSorted().map( 
+ var oss=clientsSorted().map(
      function(e) {
          return /\(([^)]+)\)/.exec( e.userAgent)[1];
     });
-    
+
   var toRet=[];
   var lastOS="";
   oss.forEach( function(e) {
-   if( e==lastOS ) 
-     toRet[toRet.length-1].count++; 
+   if( e==lastOS )
+     toRet[toRet.length-1].count++;
      else {
       toRet.push( {"os": e, "count":1 });
       lastOS=e;
@@ -150,8 +151,8 @@ function browsers() {
   var toRet=[];
   var lastBrowser="";
   navs.forEach( function(e) {
-   if( e==lastBrowser ) 
-     toRet[toRet.length-1].count++; 
+   if( e==lastBrowser )
+     toRet[toRet.length-1].count++;
      else {
       toRet.push( {"browser": e, "count":1 });
       lastBrowser=e;
@@ -166,8 +167,8 @@ function browsers() {
 
 function stats( _measure, _numRecords ) {
   var values=sortBy(_measure, _numRecords).toArray().map( function(e){return e["tsme"][_measure];});
-  _numRecords=values.length;  
+  _numRecords=values.length;
   var average=values.reduce( function(prev,e){return e+prev;},0 )/_numRecords;
   var desvest=values.reduce( function(prev,e,i){return (e-average)*(e-average)+prev;}, 0);
-  return {"average":average.toExponential(4), "desvest": desvest.toExponential(4)}; 
+  return {"average":average.toExponential(4), "desvest": desvest.toExponential(4)};
 }
