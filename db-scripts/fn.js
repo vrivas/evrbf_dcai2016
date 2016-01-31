@@ -62,7 +62,7 @@ function sortByWithClient( _measure, _numRecords ) {
     return toRet.map(
       function(e) {
         for( var i=0; i<clients.length; ++i ) {
-          if( e["clientID"]==clients[i]["clientID"] {
+          if( e["clientID"]==clients[i]["clientID"] ){
             e["client"]=clients[i];
             return e;
           }
