@@ -194,10 +194,12 @@ function allStats(_numRecords){
   , "MdASE"
 ]
   var toRet=[];
-  for( m in measures ) {
-    toRet.push( {"measure": m,
-    "values": stats(m, _numRecords)});
-  }
+  measures.forEach(
+    function(e) {}
+        toRet.push( {"measure": e,
+        "values": stats(e, _numRecords)});
+    }
+  );
   return toRet;
 }
 
