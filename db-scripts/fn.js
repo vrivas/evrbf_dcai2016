@@ -195,7 +195,7 @@ function allStats(_numRecords){
 ]
   var toRet=[];
   measures.forEach(
-    function(e) {}
+    function(e) {
         toRet.push( {"measure": e,
         "values": stats(e, _numRecords)});
     }
