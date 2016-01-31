@@ -71,7 +71,6 @@ function sortByWithClient( _measure, _numRecords ) {
     );
 }
 
-}
 function numClients() {
    return nav.find().length();
 }
