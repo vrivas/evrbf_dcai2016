@@ -56,7 +56,22 @@ function sortBy( _measure, _numRecords) {
     return sol.find(query, fields).limit(_numRecords).sort(sorting);
 }
 
+function sortByWithClient( _measure, _numRecords ) {
+    var toRet=sortBy( _measure, _numRecords );
+    var clients=nav.find();
+    return toRet.map(
+      function(e) {
+        for( var i=0; i<clients.length; ++i ) {
+          if( e.clientID==clients[i].clientID) {
+            e["client"]=clients[i];
+            return e;
+          }
+        }
+      }
+    );
+}
 
+}
 function numClients() {
    return nav.find().length();
 }
