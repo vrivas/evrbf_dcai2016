@@ -178,6 +178,28 @@ function browsers() {
 
 
 
+function allStats(_numRecords){
+  var measures=["MSE",
+  , "RMSE"
+  , "MAE"
+  , "MdAE"
+  , "MAPE"
+  , "MdAPE"
+  , "RMSPE"
+  , "RMdSPE"
+  , "sMAPE"
+  , "sMdAPE"
+  , "MASE"
+  , "RMSSE"
+  , "MdASE"
+]
+  var toRet=[];
+  for( m in measures ) {
+    toRet.push( {"measure": m,
+    "values": stats(m, _numRecords)});
+  }
+  return toRet;
+}
 
 function stats( _measure, _numRecords ) {
   var values=sortBy(_measure, _numRecords).toArray().map( function(e){return e["tsme"][_measure];});
