@@ -57,8 +57,8 @@ function sortBy( _measure, _numRecords) {
 }
 
 function sortByWithClient( _measure, _numRecords ) {
-    var toRet=sortBy( _measure, _numRecords );
-    var clients=nav.find();
+    var toRet=sortBy( _measure, _numRecords ).toArray();
+    var clients=nav.find().toArray();
     return toRet.map(
       function(e) {
         for( var i=0; i<clients.length; ++i ) {
