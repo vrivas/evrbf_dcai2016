@@ -11,12 +11,29 @@
 var fs = require('fs');
 eval(fs.readFileSync('./config.js') + '');
 //eval(fs.readFileSync('./iconio.Date.js') + '');
-eval(fs.readFileSync('./dcai2016.Persistence.js') + '');
+eval(fs.readFileSync('./isafm2017.Persistence.js') + '');
 //eval(fs.readFileSync('iconio.Experiment.js') + '');
 
 
-/// Id for the experiment
-var experimentId = "DCAI2016FORECASTING"
+
+function help () {
+    console.log('\n\
+Server for ISAFM experiments.\n\
+\n\
+Usage:\n\
+    node server-isafm2017.js \n\
+        --ip 150.214.178.89 \n\
+        --port 80 \n\
+        --experimentId ISAFM_YYYYMMDD \n\
+\n\
+\n\
+    node server-isafm2017.js --help\n\
+\n\
+\n\
+By Víctor Rivas (vrivas@ujaen.es) 2016\
+    ');
+}
+
 
 
 function distance(data1, data2) {
@@ -92,12 +109,45 @@ var cb = {
         res.send();
     }
 };
+
+function setParams () {
+    if (process.argv.length > 2) {
+        for (var i = 2; i < process.argv.length; i += 2) {
+            var val = process.argv[i];
+            if (val === "--experimentId") {
+                PARAMS.experimentId = process.argv[i + 1];
+            } else if (val === "--ip") {
+                PARAMS.ip = process.argv[i + 1];
+            } else if (val === "--port") {
+                PARAMS.port = process.argv[i + 1];
+            } else if (val === "--help") {
+                help();
+                process.exit();
+            } else {
+                parameterError(val);
+            }
+        }
+    }
+
+    var tmpCad = 'Parameters being used: ';
+    for (var p in PARAMS) {
+        tmpCad += '\n   ' + p + ': ' + PARAMS[p];
+    }
+    console.log(tmpCad);
+}
+
+function parameterError(param) {
+    console.log("ERROR WHILE READING PARAMETERS: parameter ", param, " is unknown.");
+    console.log("Use --help to get some help.");
+    process.exit(1);
+}
 /**
  * Main function
  * @return {undefined}
  */
 function main() {
 
+    setParams();
     // Variables needed by node to act as a server
     var express = require('express');
     var app = express();
@@ -105,12 +155,12 @@ function main() {
     app.use(express.static(__dirname + ''));
     app.use(express.bodyParser());
 
-    console.log("Server for DCAI2016's experiment started...");
+    console.log("Server for ISAFM2017's experiment started...");
 
     try {
         // DDBB connection
         //Comentado para mac
-        db.setModels(experimentId)
+        db.setModels(PARAMS.experimentId)
         // Comentado para mac
         db.connect("localhost", "test");
 
@@ -134,8 +184,10 @@ function main() {
     }
 
     try {
-        console.log("Trying to init server in ", GLOBALS.ipaddress, ":", GLOBALS.port, "...\n");
-        server = app.listen(GLOBALS.port, GLOBALS.ipaddress, function () {
+        console.log("Experiment: ",  PARAMS.experimentId
+            ," Trying to init server in ", PARAMS.ip
+            , ":", PARAMS.port, "...\n");
+        server = app.listen(PARAMS.port, PARAMS.ip  , function () {
             var host = server.address().address;
             var port = server.address().port;
             console.log('Example app listening at http://%s:%s', host, port);

@@ -412,10 +412,10 @@ d6.stopTimerActions = function () {
 d6.main = function (maxExecutions) {
     maxExecutions = maxExecutions || 1;
     try {
-        console.log("Executing jsEvRBF for DCAI'2016...");
+        console.log("Executing jsEvRBF for ISAFM'2017...");
 
         jsEOUtils.setVerbose(eval(jsEOUtils.getInputParam("verbose", false)));
-        jsEOUtils.setProblemId("DCAI2016FORECASTING");
+        jsEOUtils.setProblemId("ISAFM_20161205");
         d6.stopTimerActions();
         d6.setClientInfo();
         d6.createTrnVal();
@@ -432,8 +432,8 @@ d6.main = function (maxExecutions) {
                     , "xOverRate": .2
                     , "mutRate": 0.8
                     , "mutPower": 0.5
-                            //, "opSend": new jsEOOpSendIndividuals()
-                            //, "opGet": new jsEOOpGetIndividuals()
+                            , "opSend": new jsEOOpSendIndividuals()
+                            , "opGet": new jsEOOpGetIndividuals()
                     , "verbose": false
                 }
         );
