@@ -52,3 +52,14 @@ function showSols() {
   });
   return toRet;
 }
+
+
+function showSols_v2() {
+  var data=showSols();
+  var toRet=[];
+  data.forEach(function(e){
+    var cad=e.db+"; patata";
+    toRet.push(cad);
+  });
+  return toRet;
+}
