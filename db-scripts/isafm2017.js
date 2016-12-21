@@ -56,7 +56,7 @@ function showSols() {
   sols.forEach(function(e){
     sol=db[e]
     toRet.push( { "db": e,
-      "allStats": allStats());
+      "allStats": allStats()});
   });
   return toRet;
 }
