@@ -43,9 +43,20 @@ var sols=["solution_isafm_20161220_chrome_55_0_2883_87"
   , "solution_isafm_20161220_ie_11_0_9600_18537" ];
 
 
+  measures.forEach(
+    function(e) {
+        toRet.push( {"measure": e,
+        "values": stats(e, _numRecords)});
+    }
+  );
+  return toRet;
+
 function showSols() {
+  var toRet=[];
   sols.forEach(function(e){
     sol=db[e]
-    allStats();
+    toRet.push( { "db": e,
+      "allStats": allStats());
   });
+  return toRet;
 }
