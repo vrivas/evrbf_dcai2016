@@ -1,3 +1,4 @@
 load("fn.js");
 load("isafm2017.js");
-showSols();
+print( "Testing print")
+return showSols();
