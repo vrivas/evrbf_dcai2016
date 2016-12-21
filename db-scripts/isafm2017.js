@@ -58,7 +58,9 @@ function showSols_v2() {
   var data=showSols();
   var toRet=[];
   data.forEach(function(e){
-    var cad=e.db+"; patata";
+    var cad=e.allStats.reduce( function(prev, e) {
+      return prev+";"+e.measure+";"+e.values["average"]+";"+e.values["desvest"];
+    }, e.db+";");
     toRet.push(cad);
   });
   return toRet;
