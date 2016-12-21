@@ -42,7 +42,10 @@ var sols=["solution_isafm_20161220_chrome_55_0_2883_87"
   , "solution_isafm_20161220_firefox50_1_0_ws"
   , "solution_isafm_20161220_ie_11_0_9600_18537" ];
 
+
+function showSols() {
   sols.forEach(function(e){
     sol=db[e]
     allStats();
   });
+}
