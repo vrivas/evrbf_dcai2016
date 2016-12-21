@@ -43,6 +43,6 @@ var sols=["solution_isafm_20161220_chrome_55_0_2883_87"
   , "solution_isafm_20161220_ie_11_0_9600_18537" ];
 
   sols.forEach(function(e){
-    sol=e;
+    sol=db[e]
     allStats();
   });
