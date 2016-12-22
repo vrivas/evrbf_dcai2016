@@ -67,6 +67,20 @@ function errorMessage(message) {
  * @type Object
  */
 var cb = {
+  /**
+   * Retrieves the id of the experiment being carried out
+   * @param {type} req
+   * @param {type} res
+   * @returns {undefined}
+   */
+
+  getExperimentId: function (req, res) {
+      allowCORS(res)
+      res.writeHead(200, {"Content-type": "application/json"});
+      res.write(JSON.stringify({"experimentId": PARAMS.experimentId}));
+      res.send();
+  }
+
     /**
      * Saves info about a new client that has connected
      * @param {type} req
@@ -78,7 +92,7 @@ var cb = {
     saveClientInformation: function (req, res, mongoose) {
         req.body.initTime = Date.now();
         /*
-         
+
          console.log("Client information ");
          for (b in req.body) {
          console.log(b + ": " + req.body[b]);
@@ -93,7 +107,7 @@ var cb = {
     }
 
     , saveNewSolution: function (req, res) {
-        
+
         //console.log("SaveNewSolution");
 
                 db.saveNewSolution(
@@ -102,7 +116,7 @@ var cb = {
                         , req.body["rbfnn"]
                         , req.body["tsme"]
                         );
-        
+
         allowCORS(res)
         res.writeHead(200, {"Content-type": "application/json"});
         res.write(JSON.stringify({"message": "ok"}));
@@ -172,10 +186,12 @@ function main() {
     }
 
     try {
+        app.get('/experimentId', function (req, res) {
+            cb.getExperimentId(req, res);
+        });
         app.post('/clientInformation', function (req, res) {
             cb.saveClientInformation(req, res, mongoose);
         });
-
         app.post('/newSolution', function (req, res) {
             cb.saveNewSolution(req, res);
         });
