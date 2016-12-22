@@ -437,6 +437,7 @@ d6.main = function (maxExecutions) {
 
         jsEOUtils.setVerbose(eval(jsEOUtils.getInputParam("verbose", false)));
         jsEOUtils.setProblemId(d6.setExperimentId("PATATA"));
+        console.console.log( "Id del experimtneo es ", jsEOUtils.getProblemId());
         d6.stopTimerActions();
         d6.setClientInfo();
         d6.createTrnVal();
