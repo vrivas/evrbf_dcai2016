@@ -368,7 +368,7 @@ d6.setExperimentId = function ( _finalId ) {
   $.ajax({
       type: 'GET'
       , url: "/experimentId"
-      , async: true
+      , async: false
       , data: null
       , dataType: 'json'
       , success: function (data) {
