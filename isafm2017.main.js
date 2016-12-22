@@ -379,6 +379,7 @@ d6.setExperimentId = function ( _finalId ) {
           console.log("ERROR: Experiment ID couldn't be retrieved from server..." + _url);
       }
   });
+  console.log( "Returning: ", _finalId);
   return _finalId;
 }
 
@@ -439,7 +440,6 @@ d6.main = function (maxExecutions) {
 
         jsEOUtils.setVerbose(eval(jsEOUtils.getInputParam("verbose", false)));
         jsEOUtils.setProblemId(d6.setExperimentId());
-        console.log( "Id del experimtneo es ", jsEOUtils.getProblemId());
         d6.stopTimerActions();
         d6.setClientInfo();
         d6.createTrnVal();
