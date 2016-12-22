@@ -89,7 +89,7 @@ var cb = {
      * @returns {undefined}
      */
 
-    saveClientInformation: function (req, res, mongoose) {
+    , saveClientInformation: function (req, res, mongoose) {
         req.body.initTime = Date.now();
         /*
 
