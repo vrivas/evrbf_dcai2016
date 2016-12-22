@@ -5,7 +5,7 @@
  *   http://fx.sauder.ubc.ca/data.html
  *   British vs US DOllar
  *    31-Dec-1979 > 26-Dec-1983, weekly
- 
+
  * @date 15/dic/2015, 12:00
  * @author Victor M. Rivas Santos <vrivas@ujaen.es>
  *         Geneura Team (http://geneura.wordpress.com)
@@ -268,7 +268,7 @@ d6.createTrnVal = function () {
                 }
             }
         }
-    } while (d6.valSamples.length <= 0); // Just in case    
+    } while (d6.valSamples.length <= 0); // Just in case
     return this;
 }
 
@@ -360,6 +360,27 @@ d6.setClientInfo = function () {
 }
 
 /**
+ * Sets the experimenId that can be fixed or retrieved from the server
+ * @returns {String} The experimenId
+ */
+d6.setExperimentId = function ( _finalId ) {
+  if( typeof _finalId !== "undefined" && _finalId )  return _finalId;
+  $.ajax({
+      type: 'GET'
+      , url: "/experimentId"
+      , data: null
+      , dataType: 'json'
+      , success: function (data) {
+          console.log("Experiment ID retrieved from server: " + data );
+      }
+      , error: function (xhr, type) {
+          console.log("ERROR: Experiment ID couldn't be retrieved from server..." + _url);
+      }
+  });
+  return _finalId;
+}
+
+/**
  * Sends a new solution to the server to be stored in the DDBB
  * @param {type} _rbfnn The net
  * @param {type} _tsme The time-series measured errors yielded by the net
@@ -391,7 +412,7 @@ d6.sendNewSolution = function (_rbfnn, _tsme, _url) {
 
 /**
  * Establishes the values and action for button stopTimer
- * @returns {d6} Returns the d6 object to concatenate operations 
+ * @returns {d6} Returns the d6 object to concatenate operations
  */
 d6.stopTimerActions = function () {
     $("#stopTimer").click(function () {
@@ -415,7 +436,7 @@ d6.main = function (maxExecutions) {
         console.log("Executing jsEvRBF for ISAFM'2017...");
 
         jsEOUtils.setVerbose(eval(jsEOUtils.getInputParam("verbose", false)));
-        jsEOUtils.setProblemId("ISAFM_20161205");
+        jsEOUtils.setProblemId(d6.setExperimentId("PATATA"));
         d6.stopTimerActions();
         d6.setClientInfo();
         d6.createTrnVal();
