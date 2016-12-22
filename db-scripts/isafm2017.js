@@ -32,7 +32,8 @@ var navs=[ "navigator_isafm_20161220_chrome_55_0_2883_87"
   , "navigator_isafm_20161220_firefox47"
   , "navigator_isafm_20161220_firefox50_1_0_ls"
   , "navigator_isafm_20161220_firefox50_1_0_ws"
-  , "navigator_isafm_20161220_ie_11_0_9600_18537" ];
+  , "navigator_isafm_20161220_ie_11_0_9600_18537"
+  , "navigator_isafm_20161220_safari_10_0_1" ];
 
 var sols=["solution_isafm_20161220_chrome_55_0_2883_87"
   , "solution_isafm_20161220_chromium_55_0_2883_87"
@@ -40,7 +41,8 @@ var sols=["solution_isafm_20161220_chrome_55_0_2883_87"
   , "solution_isafm_20161220_firefox47"
   , "solution_isafm_20161220_firefox50_1_0_ls"
   , "solution_isafm_20161220_firefox50_1_0_ws"
-  , "solution_isafm_20161220_ie_11_0_9600_18537" ];
+  , "solution_isafm_20161220_ie_11_0_9600_18537"
+  , "solution_isafm_20161220_safari_10_0_1" ];
 
 
 function showSols() {
