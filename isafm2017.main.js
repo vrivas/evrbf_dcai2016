@@ -368,10 +368,12 @@ d6.setExperimentId = function ( _finalId ) {
   $.ajax({
       type: 'GET'
       , url: "/experimentId"
+      , async: true
       , data: null
       , dataType: 'json'
       , success: function (data) {
-          console.log("Experiment ID retrieved from server: " + data );
+          _finalId=data.experimentId;
+          console.log("Experiment ID retrieved from server: " + data.experimentId );
       }
       , error: function (xhr, type) {
           console.log("ERROR: Experiment ID couldn't be retrieved from server..." + _url);
@@ -436,8 +438,8 @@ d6.main = function (maxExecutions) {
         console.log("Executing jsEvRBF for ISAFM'2017...");
 
         jsEOUtils.setVerbose(eval(jsEOUtils.getInputParam("verbose", false)));
-        jsEOUtils.setProblemId(d6.setExperimentId("PATATA"));
-        console.console.log( "Id del experimtneo es ", jsEOUtils.getProblemId());
+        jsEOUtils.setProblemId(d6.setExperimentId());
+        console.log( "Id del experimtneo es ", jsEOUtils.getProblemId());
         d6.stopTimerActions();
         d6.setClientInfo();
         d6.createTrnVal();
@@ -484,7 +486,7 @@ d6.main = function (maxExecutions) {
 
         jsEOUtils.drawAverageFitness2("myChart");
         if (d6.numExecutions < maxExecutions) {
-            d6.timer = setTimeout(d6.main, 3000, maxExecutions);
+            d6.timer = setTimeout(d6.main, 1000, maxExecutions);
         } else {
             $("#stopTimer").click();
         }
