@@ -10,6 +10,45 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="assets/css/main.css" />
+		<!-- Including third part libraries -->
+		<script src="./zepto.min.js">// Including zepto to make AJAX calls</script>
+		<script src="./lib/mootools/mootools-core-full-compat.js"></script>
+		<script src="./lib/Chart.min.js"></script>
+
+		<!-- Including some useful libraries -->
+		<script src="./iconio.Date.js"></script>
+		<script src="./iconio.ClientInfo.js"> // Including the ClientInfo class array</script>
+
+
+		<!-- Including jsEO -->
+		<script src="http://vrivas.es/jseo/core/jsEOUtils.js"></script>
+		<script src="http://vrivas.es/jseo/core/jsEO.js"></script>
+		<script src="http://vrivas.es/jseo/core/jsEOIndividual.js"></script>
+		<script src="http://vrivas.es/jseo/core/jsEOPopulation.js"></script>
+		<script src="http://vrivas.es/jseo/core/jsEOOperator.js"></script>
+		<script src="http://vrivas.es/jseo/core/jsEOOperatorsWheel.js"></script>
+		<script src="http://vrivas.es/jseo/core/jsEOAlgorithm.js"></script>
+		<script src="http://vrivas.es/jseo/core/algorithms/jsEOGA.js"></script>
+		<script src="http://vrivas.es/jseo/core/operators/jsEOOpSelectorTournament.js"></script>
+		<script src="http://vrivas.es/jsEO/core/operators/jsEOOpSendIndividuals.js"></script>
+		<script src="http://vrivas.es/jsEO/core/operators/jsEOOpGetIndividuals.js"></script>
+
+		<!-- Including jsRBFNN -->
+		<script src="http://vrivas.es/jsRBFNN/namespace.js">//Loading namespace for js.RBFNN</script>
+		<script src="http://vrivas.es/jsRBFNN/RBFNeuron.js">//Loading the neurons</script>
+		<script src="http://vrivas.es/jsRBFNN/RBFNNet.js">//Loading the nets</script>
+
+		<!-- Including jsEvRBF -->
+		<script src="./jsEvRBF/namespace.js">//Loading namespace for js.EvRBF</script>
+		<script src="./jsEvRBF/operators.js">//Loading operators for js.EvRBF</script>
+		<script src="./jsEvRBF/individual.js">//Loading invidivual for js.EvRBF</script>
+		<script src="./jsEvRBF/EvRBF.js">//Loading the algorithm</script>
+
+
+		<!-- Including ts-error-measures -->
+		<script src="http://vrivas.es/ts-error-measures/ts-error-measures.js">// Error measures for Time-Series forecasting</script>
+
+		<script src="./isafm2017.main.js">// Loads data and main function for DCAI'2016 experiments</script>
 	</head>
 	<body>
 
@@ -40,8 +79,9 @@
 		<!-- Banner -->
 			<section id="banner">
 				<div class="content">
-					<h1>Ipsum sed lorem</h1>
-					<p>Morbi in sem quis dui placerat ornare. Pellentesque odio nisi, euismod<br />sed arcu cras consecuat lorem ipsum dolor sit amet.</p>
+					<h1>jsEvRBF: Running <span id="sp_numExecutionsTitle"></span> of <span id="sp_maxExecutionsTitle"></span> executions</h1>
+					<em><a href="http://geneura.ugr.es" target="_blank">GeNeura Team - TIC024-Free/Libre Software for Optimization</a><br/>
+							Experiments for the paper to be sent to ISAFM'2017</a></em>
 					<!--
 					<ul class="actions">
 						<li><a href="#one" class="button scrolly">Get Started</a></li>
@@ -145,13 +185,6 @@
 					&copy; Untitled. Design <a href="https://templated.co">TEMPLATED</a>. Images <a href="https://unsplash.com">Unsplash</a>.
 				</div>
 			</footer>
-
-		<!-- Scripts -->
-			<script src="assets/js/jquery.min.js"></script>
-			<script src="assets/js/jquery.scrolly.min.js"></script>
-			<script src="assets/js/skel.min.js"></script>
-			<script src="assets/js/util.js"></script>
-			<script src="assets/js/main.js"></script>
 
 	</body>
 </html>
