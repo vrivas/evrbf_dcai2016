@@ -416,7 +416,7 @@ d6.sendNewSolution = function (_rbfnn, _tsme, _url) {
 };
 
 d6.rerun=function( secs ) {
-  alert( secs )
+  secs=secs||10;
   $("#rerun_wrapper").show();
   if( secs>0 ) {
     $("#rerun_seconds").html( secs );
