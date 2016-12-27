@@ -417,10 +417,10 @@ d6.sendNewSolution = function (_rbfnn, _tsme, _url) {
 
 d6.rerun=function( secs ) {
   secs=secs||10;
-  $("#rerun_wrapper").show();
+  $("#rerun_wrapper").attr( "class", "visible" )
   if( secs>0 ) {
-    $("#rerun_seconds").html( secs );
-    setTimeout( d6.rerun, 1000, secs-1 );
+    $("#rerun_seconds").html( secs-- );
+    setTimeout( "d6.rerun("+secs+")", 1000 );
   } else {
     history.go(0);
   }
