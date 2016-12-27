@@ -415,6 +415,17 @@ d6.sendNewSolution = function (_rbfnn, _tsme, _url) {
     return this;
 };
 
+d6.rerun=function( secs ) {
+  alert( secs )
+  $("#rerun_wrapper").show();
+  if( secs>0 ) {
+    $("#rerun_seconds").html( secs );
+    setTimeout( d6.rerun, 1000, secs-1 );
+  } else {
+    history.go(0);
+  }
+}
+
 /**
  * Establishes the values and action for button stopTimer
  * @returns {d6} Returns the d6 object to concatenate operations
@@ -490,7 +501,8 @@ d6.main = function (maxExecutions) {
         if (d6.numExecutions < maxExecutions) {
             d6.timer = setTimeout(d6.main, 1000, maxExecutions);
         } else {
-            $("#stopTimer").click();
+            //$("#stopTimer").click();
+            d6.rerun();
         }
     } catch (e) {
         console.log("Error: d6.main: " + e);
