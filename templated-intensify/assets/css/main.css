@@ -94,6 +94,10 @@
 			visibility: visible;
 	}
 
+	#rerun_wrapper {
+		font-weight: bold;
+		color: #f6755e;
+	}
 	@media screen and (max-width: 1680px) {
 
 		.container.\31 25\25 {

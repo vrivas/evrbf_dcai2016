@@ -418,7 +418,7 @@ d6.sendNewSolution = function (_rbfnn, _tsme, _url) {
 d6.rerun=function( secs ) {
   secs=(typeof secs==="undefined")?10:secs;
   $("#rerun_wrapper").attr( "class", "visible" )
-  if( secs>0 ) {
+  if( secs>=0 ) {
     $("#rerun_seconds").html( secs-- );
     setTimeout( "d6.rerun("+secs+")", 1000 );
   } else {
