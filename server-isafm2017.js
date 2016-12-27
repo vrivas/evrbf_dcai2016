@@ -108,14 +108,14 @@ var cb = {
 
     , saveNewSolution: function (req, res) {
 
-        //console.log("SaveNewSolution");
 
-                db.saveNewSolution(
+                var tmp=db.saveNewSolution(
                         req.body["problem"]
                         , req.body["clientID"]
                         , req.body["rbfnn"]
                         , req.body["tsme"]
                         );
+                      console.log("SaveNewSolution ",tmp);
 
         allowCORS(res)
         res.writeHead(200, {"Content-type": "application/json"});
