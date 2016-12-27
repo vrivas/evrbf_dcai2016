@@ -299,7 +299,9 @@ d6.doForecasting = function (_net) {
  * @returns {d6} Returns the object d6 to concatenate operations.
  */
 d6.drawForecasting = function (y, f) {
-    var ctx = document.getElementById("forecasting").getContext("2d");
+    var ctx = document.getElementById("forecasting");
+    if( typeof ctx==="undefined" || !ctx) return this;
+    ctx=ctx.getContext("2d");
     var data = {
         labels: y.map(function (e, i) {
             return !(i%10)?i:"";
