@@ -464,13 +464,13 @@ d6.main = function (maxExecutions) {
                     , "inputDimension": d6.inputDimension
                     , "tournamentSize": 3
                     , "popSize": 15
-                    , "numGenerations": 10
+                    , "numGenerations": 50
                     , "replaceRate": .2
                     , "xOverRate": .2
                     , "mutRate": 0.8
                     , "mutPower": 0.5
-                            , "opSend": new jsEOOpSendIndividuals()
-                            , "opGet": new jsEOOpGetIndividuals()
+                            //, "opSend": new jsEOOpSendIndividuals()
+                            //, "opGet": new jsEOOpGetIndividuals()
                     , "verbose": false
                 }
         );
