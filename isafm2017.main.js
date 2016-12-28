@@ -478,7 +478,8 @@ d6.main = function (maxExecutions) {
         ++d6.numExecutions;
 
         // Writting some pre-execution information:
-        jsEOUtils.replace( navigator.userAgent, "sp_browser")
+        jsEOUtils.replace( navigator.userAgent, "sp_browser_es")
+                .replace( navigator.userAgent, "sp_browser_en")
                 .replace(d6.numExecutions, "sp_numExecutions")
                 .replace( d6.numExecutions, "sp_numExecutionsTitle")
                 .replace(maxExecutions, "sp_maxExecutions")
