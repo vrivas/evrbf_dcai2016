@@ -464,7 +464,7 @@ d6.main = function (maxExecutions) {
                     , "inputDimension": d6.inputDimension
                     , "tournamentSize": 3
                     , "popSize": 15
-                    , "numGenerations": 50
+                    , "numGenerations": 10
                     , "replaceRate": .2
                     , "xOverRate": .2
                     , "mutRate": 0.8
