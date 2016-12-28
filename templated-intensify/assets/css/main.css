@@ -98,6 +98,13 @@
 		font-weight: bold;
 		color: #f6755e;
 	}
+
+	.lang_invisible, en {
+		display: none;
+	}
+	.lang_visible {
+		display: inline;
+	}
 	@media screen and (max-width: 1680px) {
 
 		.container.\31 25\25 {

@@ -49,6 +49,16 @@
 		<script src="http://vrivas.es/ts-error-measures/ts-error-measures.js">// Error measures for Time-Series forecasting</script>
 
 		<script src="./isafm2017.main.js">// Loads data and main function for DCAI'2016 experiments</script>
+		<script>
+		function spanish() {
+			$("en").attr("class", "lang_invisible");
+			$("es").attr("class", "lang_visible");
+		}
+		function english() {
+			$("es").attr("class", "lang_invisible");
+			$("en").attr("class", "lang_visible");
+		}
+		</script>
 	</head>
 	<body>
 
@@ -79,8 +89,17 @@
 		<!-- Banner -->
 			<section id="banner">
 				<div class="content">
-					<h1>jsEvRBF: Realizando <span id="sp_numExecutionsTitle">#</span> de <span id="sp_maxExecutionsTitle">#</span> ejecuciones</h1>
-					<p>Experimentos para el artículo que deseamos enviar a ISAFM'2017
+					<p style="margin-bottom: 4em; font-size: 90%;"><a href="javascript:spanish()">Español</a>
+					<a href="javascript:english()">English</a></p>
+					<h1>jsEvRBF:
+						<es>Realizando</es><en>Running</en>
+						<span id="sp_numExecutionsTitle">#</span>
+						<es>de</es><en>of</en>
+						<span id="sp_maxExecutionsTitle">#</span>
+						<es>ejecuciones</es><en>executions</en>.</h1>
+					<p>
+						<es>Experimentos para el artículo que deseamos enviar a ISAFM'2017</es>
+						<en>Experiments for the paper to be sent to ISAFM'2017</en>
 						<br/>
 						<a href="http://geneura.ugr.es" target="_blank">GeNeura Team - TIC024-Free/Libre Software for Optimization</a></p>
 
@@ -90,29 +109,29 @@
 
 		<!-- One -->
 			<section id="one" class="wrapper">
+				<en>
 				<div class="inner flex flex-3">
 					<div class="flex-item left">
 						<div>
-							<h3>¿Qué es esto?</h3>
-							<p>En estos momentos tu ordenador está ejecutando un algoritmo evolutivo que intenta predecir
-							los valores futuros de una serie temporal.</p>
+							<h3>What's this?</h3>
+							<p>Currently, your computer is executing and evolutionary algorithm that tries to forecast the future values of a time-series.</p>
 						</div>
 						<div>
-							<h3>¿Es peligroso?</h3>
+							<h3>Is it dangerous?</h3>
 							<p>No.
 								<br/>
-								Todo se ejecuta dentro de tu navegador, y no guardamos ningún dato ni programa en tu ordenador.
+								Everything is being executed in your browser, and we don't store data or programs in your computer.
 								<br/>
-								Además, los datos que usamos están relacionados con el entorno financiero y no afectan a la salud ni la vida de ningún ser vivo.
+								Furthermore, data being used is related to financial subjetcs, and do not affect to the life or health of any living being.
 						</p>
 						</div>
 						<div>
-							<h3>¿Quién ha hecho esta página?</h3>
-							<p>Este es un proyecto de investigación del <a href="http://geneura.ugr.es" target="_blank">Grupo GeNeura</a>.
+							<h3>Who are the authors of this page?</h3>
+							<p>This is a <a href="http://geneura.ugr.es" target="_blank">GeNeura Teams</a>'s research project.
 							<br/>
-							La página web y gran parte del código JavaScript es obra del profesor <a href="http://vrivas.es" target="_blank">Víctor M. Rivas</a>.
+							The web page and most of the JavaScript code have been done by professor <a href="http://vrivas.es" target="_blank">Víctor M. Rivas</a>.
 							<br/>
-						  El CSS corresponde a la plantilla Intensify de <a href="https://templated.co/" target="_blank">templated.co</a>.</p>
+						  The CSS has been taken from template Intensify, by <a href="https://templated.co/" target="_blank">templated.co</a>.</p>
 						</div>
 					</div>
 					<div class="flex-item image fit round">
@@ -120,25 +139,78 @@
 					</div>
 					<div class="flex-item right">
 						<div>
-							<h3>¿Para qué sirve?</h3>
-							<p>Nos permite evaluar la biblioteca <a href="http://vrivas.github.io/evrbf_dcai2016/" target="_blank">jsEvRBF</a> que sirve para evolucionar redes
-							neuronales de funciones de base radial.</p>
+							<h3>What is this for?</h3>
+							<p>These experiments allows us to evaluate the <a href="http://vrivas.github.io/evrbf_dcai2016/" target="_blank">jsEvRBF</a> library. This library makes radial basis function neural netwroks to evolve.</p>
 						</div>
 						<div>
-							<h3>¿Guardáis algún dato que me comprometa?</h3>
+							<h3>Do you store any important information about me?</h3>
 							<p>No.
 								<br/>
-								La única información que almacenamos es la relativa a tu navegador, para poder hacer estadísticas.
+								The only information we store is your browser vendor and version to compute a few statistics.
 								<br/>
-								Estás utilizando <span id="sp_browser"></span>.
+								You are currently using <span id="sp_browser"></span>.
 						</p>
 						</div>
 						<div>
-							<h3>¿Dónde publicaréis los resultados?</h3>
-							<p>Escribiremos un artículo que enviaremos a la revista <a href="http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-1174" target="_blank">Intelligent Systems in Accounting, Finance and Management</a></p>
+							<h3>Where will you publish the results?</h3>
+							<p>We'll write a paper and will send it to <a href="http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-1174" target="_blank">Intelligent Systems in Accounting, Finance and Management</a></p>
 						</div>
 					</div>
 				</div>
+			</en>
+
+			<es>
+			<div class="inner flex flex-3">
+				<div class="flex-item left">
+					<div>
+						<h3>¿Qué es esto?</h3>
+						<p>En estos momentos tu ordenador está ejecutando un algoritmo evolutivo que intenta predecir
+						los valores futuros de una serie temporal.</p>
+					</div>
+					<div>
+						<h3>¿Es peligroso?</h3>
+						<p>No.
+							<br/>
+							Todo se ejecuta dentro de tu navegador, y no guardamos ningún dato ni programa en tu ordenador.
+							<br/>
+							Además, los datos que usamos están relacionados con el entorno financiero y no afectan a la salud ni la vida de ningún ser vivo.
+					</p>
+					</div>
+					<div>
+						<h3>¿Quién ha hecho esta página?</h3>
+						<p>Este es un proyecto de investigación del <a href="http://geneura.ugr.es" target="_blank">Grupo GeNeura</a>.
+						<br/>
+						La página web y gran parte del código JavaScript es obra del profesor <a href="http://vrivas.es" target="_blank">Víctor M. Rivas</a>.
+						<br/>
+						El CSS corresponde a la plantilla Intensify de <a href="https://templated.co/" target="_blank">templated.co</a>.</p>
+					</div>
+				</div>
+				<div class="flex-item image fit round">
+					<img src="images/pic01.jpg" alt="" />
+				</div>
+				<div class="flex-item right">
+					<div>
+						<h3>¿Para qué sirve?</h3>
+						<p>Nos permite evaluar la biblioteca <a href="http://vrivas.github.io/evrbf_dcai2016/" target="_blank">jsEvRBF</a> que sirve para evolucionar redes
+						neuronales de funciones de base radial.</p>
+					</div>
+					<div>
+						<h3>¿Guardáis algún dato que me comprometa?</h3>
+						<p>No.
+							<br/>
+							La única información que almacenamos es la relativa a tu navegador, para poder hacer estadísticas.
+							<br/>
+							Estás utilizando <span id="sp_browser"></span>.
+					</p>
+					</div>
+					<div>
+						<h3>¿Dónde publicaréis los resultados?</h3>
+						<p>Escribiremos un artículo que enviaremos a la revista <a href="http://onlinelibrary.wiley.com/journal/10.1002/(ISSN)1099-1174" target="_blank">Intelligent Systems in Accounting, Finance and Management</a></p>
+					</div>
+				</div>
+			</div>
+		</es>
+
 			</section>
 
 		<!-- Two -->
@@ -196,17 +268,27 @@
 		<!-- Footer -->
 			<footer id="footer">
 				<div class="inner">
-					<h2>Datos de contacto</h2>
+					<h2><es>Datos de contacto</es><en>Contact</en></h2>
 					<ul class="actions">
 						<li><span class="icon fa-phone"></span> <a href="tel:+34953212344">(+34) 953 21 23 44</a></li>
 						<li><span class="icon fa-envelope"></span> <a href="mailto:vrivas@ujaen.es">vrivas@ujaen.es</a></li>
 						<li><span class="icon fa-map-marker"></span> <a href="http://vrivas.es" target="_blank">http://vrivas.es</a></li>
 					</ul>
-					<a href="http://wwwdi.ujaen.es" target="_blank">Departamento de Informática</a> -
+					<es>
+						<a href="http://wwwdi.ujaen.es" target="_blank">Departamento de Informática</a> -
 					<a href="http://www.ujaen.es" target="_blank">Universidad de Jaén</a> <br/>
 
 					<a href="http://atc.ugr.es" target="_blank">Departamento de Arquitectura y Tecnología de Computadores</a> -
-					<a href="http://www.ugr.es" target="_blank">Universidad de Granada</a> <br/>
+					<a href="http://www.ugr.es" target="_blank">Universidad de Granada</a>
+				</es>
+
+				<en>
+					<a href="http://wwwdi.ujaen.es" target="_blank">Department of Computer Sciences</a> -
+				<a href="http://www.ujaen.es" target="_blank">University of Jaén (Spain)</a> <br/>
+
+				<a href="http://atc.ugr.es" target="_blank">Department of Computers Architecture and Technology</a> -
+				<a href="http://www.ugr.es" target="_blank">University of Granada (Spain)</a>
+			</en>
 				</div>
 				<div class="copyright">
 					&copy; Untitled. Design <a href="https://templated.co">TEMPLATED</a>. Images <a href="https://unsplash.com">Unsplash</a>.
