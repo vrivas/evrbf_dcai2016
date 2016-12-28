@@ -419,7 +419,7 @@ d6.rerun=function( secs ) {
   secs=(typeof secs==="undefined")?10:secs;
   $("#rerun_wrapper").attr( "class", "visible" )
   if( secs>=0 ) {
-    $("#rerun_seconds").html( (secs--) +" segundo"+(secs!=0?"s":"") );
+    $("#rerun_seconds").html( (secs--) +" <es>segundo</es><en>second</en>"+(secs!=0?"s":"") );
     setTimeout( "d6.rerun("+secs+")", 1000 );
   } else {
     history.go(0);
