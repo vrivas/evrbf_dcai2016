@@ -491,8 +491,8 @@ d6.main = function (maxExecutions) {
         var expected = d6.data.slice(d6.inputDimension); // Removing the numInputs first elements
         var forecasted = d6.doForecasting(algorithm.getPopulation().getAt(0).getChromosome());
         var tsem = TSEM.setOfErrors(expected, forecasted);
-        //d6.sendNewSolution(algorithm.getPopulation().getAt(0).getChromosome(), tsem);
-        d6.drawForecasting(expected, forecasted);
+        d6.sendNewSolution(algorithm.getPopulation().getAt(0).getChromosome(), tsem);
+        //d6.drawForecasting(expected, forecasted);
         jsEOUtils.replace(algorithm.getPopulation().getAt(0).getFitness().toFixed(3), "sp_currentFitness")
                 .replace(tsem.MAPE.toFixed(3), "sp_currentMAPE")
                 .replace(d6.bestFitness.toFixed(3), "sp_bestFitness");
