@@ -115,7 +115,7 @@ var cb = {
                         , req.body["rbfnn"]
                         , req.body["tsme"]
                         );
-                      console.log("SaveNewSolution ",tmp);
+                     // console.log("SaveNewSolution ",tmp);
 
         allowCORS(res)
         res.writeHead(200, {"Content-type": "application/json"});
