@@ -26,7 +26,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-var navs=[ "navigator_isafm_20161220_chrome_55_0_2883_87"
+/*var navs=[ "navigator_isafm_20161220_chrome_55_0_2883_87"
   , "navigator_isafm_20161220_chromium_55_0_2883_87"
   , "navigator_isafm_20161220_edge_38_14393_0_0"
   , "navigator_isafm_20161220_firefox47"
@@ -43,6 +43,26 @@ var sols=["solution_isafm_20161220_chrome_55_0_2883_87"
   , "solution_isafm_20161220_firefox50_1_0_ws"
   , "solution_isafm_20161220_ie_11_0_9600_18537"
   , "solution_isafm_20161220_safari_10_0_1" ];
+*/
+
+var navs=["navigator_20170108_firefox_50_1_0_macs",
+, "navigator_20170108_safari_10_0_2_macs"
+, "navigator_20170108_firefox_47_0_linuxes"
+, "navigator_20170108_chromium_51_0_2704_79_linuxes"
+, "navigator_20170108_firefox_50_1_0_androids"
+, "navigator_20170108_chrome_55_0_2883_95_macs"
+, "navigator_20170108_edge_14_14393"
+, "navigator_20170108_chrome_55_0_2883_87_windows"];
+
+var sols=["solution_20170108_firefox_50_1_0_macs",
+, "solution_20170108_safari_10_0_2_macs"
+, "solution_20170108_firefox_47_0_linuxes"
+, "solution_20170108_chromium_51_0_2704_79_linuxes"
+, "solution_20170108_firefox_50_1_0_androids"
+, "solution_20170108_chrome_55_0_2883_95_macs"
+, "solution_20170108_edge_14_14393"
+, "solution_20170108_chrome_55_0_2883_87_windows"];
+
 
 
 function showSols() {
@@ -67,3 +87,43 @@ function showSols_v2() {
   });
   return toRet;
 }
+
+
+function showSols_v3() {
+
+  var toRet=[];
+  for( var e=0; e<sols.length; ++e ) {
+    sol=db[sols[e]];
+    for( var i=0; i<sol.find().length(); ++i ) {
+      toRet.push( { "db":sols[e],
+        "stats": sol.find()[i].tsme
+        } );
+    } 
+  }
+  return toRet;
+}
+
+
+function showSols_v4() {
+
+  var toRet=[];
+  var navegadores=sols.join(";");
+  for( var j=0; j<10; ++j ) {
+    var cad="MSE;";
+    for( var e=0; e<sols.length; ++e ) {
+      sol=db[sols[e]];
+      cad+=sol.find()[j].tsme["MSE"]+";"
+    } 
+    toRet.push( cad );
+  }
+  return toRet;
+}
+
+
+
+
+
+
+
+
+

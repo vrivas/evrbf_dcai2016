@@ -26,8 +26,8 @@
  */
 
 // Test
-var nav=db.navigator_dcai_20160108;
-var sol=db.solution_dcai_20160108;
+//var nav=db.navigator_dcai_20160108;
+//var sol=db.solution_dcai_20160108;
 function minim() {
     return sol.group(
             {
@@ -51,7 +51,7 @@ function sortBy( _measure, _numRecords) {
     var fields={ "id": 1}, sorting={}, query={};
     fields["clientID"]=1;
     fields['tsme.'+_measure]=1;
-    sorting['tsme.'+_measure]=1;
+    sorting['tsme.'+_measure]=_numRecords/Math.abs(_numRecords); // to sort ascending or descending according to _numRecords sign
     query["tsme."+_measure]={$ne:1e6};
     return sol.find(query, fields).limit(_numRecords).sort(sorting);
 }
@@ -84,19 +84,31 @@ function numSolutions() {
 function clientsByUserAgent( cad ) {
     // Chrome browsers also include "Safari" in their descriptions
     if( cad==="Safari" ) return safari();
+    
+    // Some Android SO are described as Linux; Android
+    if( cad==="Linux" ) return linux();
 
-    var byQuery=nav.find( { userAgent: new RegExp(cad)}).length();
+    var query=nav.find( { userAgent: new RegExp(cad)});//.length();
     var total=numClients();
     return { "query": cad
-        , "byQuery": byQuery
+        , "byQuery": query.length()
         , "total": total
-        , "rate": ((byQuery/total)*100).toFixed(2)+"%"
+        , "rate": ((query.length()/total)*100).toFixed(2)+"%"
+        //, "results": query._arr
     }
 }
 
 
 function linux() {
-    return clientsByUserAgent( "Linux" );
+    var linux=nav.find( { userAgent: new RegExp("Linux")}).length();
+    var android=nav.find( { userAgent: new RegExp("Android")}).length();
+    var byQuery=android-linux;
+    var total=numClients();
+    return { "query": "Linux"
+        , "byQuery": byQuery
+        , "total": total
+        , "rate": ((byQuery/total)*100).toFixed(2)+"%"
+    }
 }
 
 function windows() {
@@ -107,6 +119,9 @@ function android() {
     return clientsByUserAgent( "Android" );
 }
 
+function macos() {
+    return clientsByUserAgent("Mac OS");
+}
 
 function chrome() {
     return clientsByUserAgent( "Chrome" );
