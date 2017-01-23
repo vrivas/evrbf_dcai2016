@@ -222,6 +222,6 @@ function stats( _measure, _numRecords ) {
   var values=sortBy(_measure, _numRecords).toArray().map( function(e){return e["tsme"][_measure];});
   _numRecords=values.length;
   var average=values.reduce( function(prev,e){return e+prev;},0 )/_numRecords;
-  var desvest=values.reduce( function(prev,e,i){return (e-average)*(e-average)+prev;}, 0);
+  var desvest=Math.sqrt( values.reduce( function(prev,e,i){return (e-average)*(e-average)+prev;}, 0));
   return {"average":average.toExponential(4), "desvest": desvest.toExponential(4)};
 }
