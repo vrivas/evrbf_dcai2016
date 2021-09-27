@@ -14,8 +14,9 @@ eval(fs.readFileSync('./config.js') + '');
 eval(fs.readFileSync('./isafm2017.Persistence.js') + '');
 //eval(fs.readFileSync('iconio.Experiment.js') + '');
 
-let PARAMS={}
+var bodyParser = require('body-parser')
 
+let PARAMS={}
 
 function help () {
     console.log('\n\
@@ -168,7 +169,7 @@ function main() {
     var app = express();
     // Serving static files
     app.use(express.static(__dirname + ''));
-    app.use(express.bodyParser());
+    app.use(bodyParser());
 
     console.log("Server for ISAFM2017's experiment started...");
 
