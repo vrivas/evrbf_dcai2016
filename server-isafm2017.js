@@ -14,6 +14,7 @@ eval(fs.readFileSync('./config.js') + '');
 eval(fs.readFileSync('./isafm2017.Persistence.js') + '');
 //eval(fs.readFileSync('iconio.Experiment.js') + '');
 
+let PARAMS={}
 
 
 function help () {
