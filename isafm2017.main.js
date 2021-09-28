@@ -378,7 +378,7 @@ d6.setExperimentId = function ( _finalId ) {
           console.log("Experiment ID retrieved from server: " + data.experimentId );
       }
       , error: function (xhr, type) {
-          console.log("ERROR: Experiment ID couldn't be retrieved from server..." + _url);
+          console.log("ERROR: Experiment ID couldn't be retrieved from server..." );
       }
   });
   console.log( "Returning: ", _finalId);
