@@ -7,3 +7,4 @@
 *.properties
 *~
 nohup.out
+package-lock.json
